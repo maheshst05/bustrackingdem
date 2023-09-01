@@ -12,13 +12,28 @@ liveRouter.put("/api/update/bus/:id", async (req, res) => {
       { _id: busId },
       {
         $set: {
-          sourceRoute: sourceRoute,
-          destinationRoute: destinationRoute,
+          sourceRoute: {
+            latitude: sourceRoute.latitude,
+            longitude: sourceRoute.longitude,
+            latitudeDelta: sourceRoute.latitudeDelta,
+            longitudeDelta: sourceRoute.longitudeDelta
+          },
+          destinationRoute: {
+            latitude: destinationRoute.latitude,
+            longitude: destinationRoute.longitude,
+            latitudeDelta: destinationRoute.latitudeDelta,
+            longitudeDelta: destinationRoute.longitudeDelta
+          },
           busName: busName,
-          currentRouteLocation: currentRouteLocation
+          currentRouteLocation: {
+            latitude: currentRouteLocation.latitude,
+            longitude: currentRouteLocation.longitude,
+            latitudeDelta: currentRouteLocation.latitudeDelta,
+            longitudeDelta: currentRouteLocation.longitudeDelta
+          }
         }
       },
-      { new: true }
+      { new: true } // Return the updated document
     );
 
     if (updatedBus) {

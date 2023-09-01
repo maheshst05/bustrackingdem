@@ -17,6 +17,14 @@ const busSchema = new mongoose.Schema({
     latitudeDelta: Number,
     longitudeDelta: Number,
   },
+  currentRouteLocation:{
+    
+      latitude: Number,
+      longitude: Number,
+      latitudeDelta: Number,
+      longitudeDelta: Number,
+    
+  },
   status: String,
 }, { timestamps: true });
 
