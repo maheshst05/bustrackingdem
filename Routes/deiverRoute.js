@@ -60,7 +60,7 @@ driverRouter.post("/api/driver/login", async (req, res) => {
       return res.status(401).json({ msg: "Invalid credentials", status: false });
     }
 
-    // Compare passwords
+    // Compare passwords  ads
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       return res.status(401).json({ msg: "Invalid credentials", status: false });
