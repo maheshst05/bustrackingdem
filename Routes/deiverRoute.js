@@ -151,26 +151,34 @@ driverRouter.get("/api/get/bus/",authentication,async(req,res)=>{
 })
 
 driverRouter.put("/api/update/bus/:id", async (req, res) => {
-    const busId = req.params.id;
-    const { status } = req.body; // Extract the status from req.body
-  
-    try {
-      const updatedBus = await Bus.findOneAndUpdate(
-        { _id: busId },
-        { $set: { status: status } }, // Update the 'status' field
-        { new: true } // Return the updated document
-      );
-  
-      if (updatedBus) {
-        return res.status(200).json({ "msg": "Updated successfully", "bus": updatedBus });
-      } else {
-        return res.status(404).json({ "msg": "Bus not found" });
-      }
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ "msg": "Internal server error" });
+  const busId = req.params.id;
+  const { status, busName, route, sourceRoute, destinationRoute } = req.body; // Extract fields from req.body
+
+  try {
+    const updatedBus = await Bus.findOneAndUpdate(
+      { _id: busId },
+      {
+        $set: {
+          status: status,
+          busName: busName,
+          route: route,
+          sourceRoute: sourceRoute,
+          destinationRoute: destinationRoute
+        }
+      },
+      { new: true } // Return the updated document
+    );
+
+    if (updatedBus) {
+      return res.status(200).json({ "msg": "Updated successfully", "bus": updatedBus });
+    } else {
+      return res.status(404).json({ "msg": "Bus not found" });
     }
-  });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ "msg": "Internal server error" });
+  }
+});
 
 
 module.exports = driverRouter;

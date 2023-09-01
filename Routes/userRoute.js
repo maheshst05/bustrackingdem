@@ -8,6 +8,7 @@ const Logout = require("../Model/LogoutModel")
 const authentication = require("../Middleware/authentication")
 const Token = require("../Model/tokenModel")
 const Bus  =  require("../Model/busModel")
+
 userRouter.post("/api/auth/register", async (req, res) => {
   try {
     const { name, email, password, dob, phoneNo ,age,} = req.body;
@@ -35,7 +36,7 @@ userRouter.post("/api/auth/register", async (req, res) => {
       password: hashedPassword,
     });
 
-    return res.status(201).json({ status: true, user });
+    return res.status(200).json({ status: true, user });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "An error occurred", status: false });
@@ -69,14 +70,15 @@ if( grant_type !=='password' ){
 
     // Generate an access token
     const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7h",
+      expiresIn: "1d",
     });
-const accessTokenstore = new Token({
-    userId:user._id,
-    tokenType:"access_token",
-    tokenValue:accessToken,
-})
-await accessTokenstore.save()
+// const accessTokenstore = new Token({
+//     userId:user._id,
+//     tokenType:"access_token",
+//     tokenValue:accessToken,
+// })
+//await accessTokenstore.save()
+
     // Generate a refresh token
     const refreshToken = jwt.sign(
       { userId: user._id },
@@ -121,19 +123,17 @@ userRouter.post("/api/auth/logout",authentication, async (req, res) => {
     }
   });
 // Define the API endpoint
-userRouter.get("/api/get-bus/:id", authentication, async (req, res) => {
+userRouter.get("/api/get-bus/", authentication, async (req, res) => {
   try {
-    const busId = req.params.id;
+    // Fetch all buses from the database
+    const buses = await Bus.find();
 
-    // Fetch the bus information from the database using the provided busId
-    const bus = await Bus.findById(busId);
-
-    if (!bus) {
-      return res.status(404).json({ msg: "Bus not found", status: false });
+    if (!buses || buses.length === 0) {
+      return res.status(404).json({ msg: "Buses not found", status: false });
     }
 
-    // Construct the response object with the fetched bus information
-    const response = {
+    // Construct the response object with an array of fetched buses
+    const response = buses.map((bus) => ({
       id: bus._id,
       busName: bus.busName,
       driver_name: bus.driver_name,
@@ -142,7 +142,7 @@ userRouter.get("/api/get-bus/:id", authentication, async (req, res) => {
       sourceRoute: bus.sourceRoute,
       destinationRoute: bus.destinationRoute,
       status: bus.status
-    };
+    }));
 
     return res.status(200).json(response);
   } catch (error) {
@@ -150,6 +150,7 @@ userRouter.get("/api/get-bus/:id", authentication, async (req, res) => {
     return res.status(500).json({ msg: "An error occurred", status: false });
   }
 });
+
 
 
 // userRouter.get('/api/auth/get',authentication,async(req,res)=>{
