@@ -7,7 +7,10 @@ const driverSchema = new mongoose.Schema({
   age: Number,
   dob:Date,
   phoneNo: Number,
-  
+  profileType: {
+    type: String,
+   default: 'Driver', // Set the default value to 'User'
+  },
   licenseNumber: String,
   password: String,
 }, { timestamps: true });

@@ -5,9 +5,12 @@ const userSchema = new mongoose.Schema({
   dob: Date,
   phoneNo: Number,
   email: String,
-  phoneNo: Number,
   password: String,
-  profileType:String,
+  profileType: {
+    type: String,
+    enum: ['Driver', 'Admin', 'User'], // Restrict values to these options
+    default: 'User', // Set the default value to 'User'
+  },
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
