@@ -47,5 +47,23 @@ liveRouter.put("/api/update/bus/:id", async (req, res) => {
   }
 });
 
+liveRouter.get('/api/live-location/bus/:id',async(req,res)=>{
+  const id = req.params
+  try {
+    const liveLocation = await Bus({_id: id})
+    const response = liveLocation.map((bus) => ({
+      busName: bus.busName,
+      sourceRoute: bus.sourceRoute,
+      destinationRoute: bus.destinationRoute,
+      currentRouteLocation: bus.currentRouteLocation,
+      status: bus.status
+    }));
+    
+    return res.status(200).json({ "Bus":response});
+  
+  } catch (error) {
+    return res.status(500).json({ "msg": "Internal server error" });
+  }
+})
 
   module.exports = liveRouter
