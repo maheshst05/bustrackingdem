@@ -8,14 +8,13 @@ const Logout = require("../Model/LogoutModel")
 const authentication = require("../Middleware/authentication")
 const Token = require("../Model/tokenModel")
 const Bus  =  require("../Model/busModel")
-
 userRouter.post("/api/auth/register", async (req, res) => {
   try {
-    const { name, email, password, dob, phoneNo ,age,} = req.body;
+    const { name, email, password, dob, phoneNo, age, profileType } = req.body;
 
     // Check if the phone number is already used
-    const usernameCheck = await User.findOne({ phoneNo });
-    if (usernameCheck) {
+    const phoneNoCheck = await User.findOne({ phoneNo });
+    if (phoneNoCheck) {
       return res
         .status(400)
         .json({ msg: "Phone Number already used", status: false });
@@ -33,6 +32,8 @@ userRouter.post("/api/auth/register", async (req, res) => {
       name,
       phoneNo,
       dob,
+      age,
+      profileType, // Ensure profileType is included here
       password: hashedPassword,
     });
 
@@ -42,6 +43,7 @@ userRouter.post("/api/auth/register", async (req, res) => {
     return res.status(500).json({ msg: "An error occurred", status: false });
   }
 });
+
 userRouter.post("/api/auth/login", async (req, res) => {
   try {
     const { phoneNo, password, grant_type } = req.body;
@@ -79,6 +81,8 @@ userRouter.post("/api/auth/login", async (req, res) => {
       status: true,
       accessToken,
       refreshToken,
+      profileType:user.profileType
+      
     });
   } catch (error) {
     console.error(error);
