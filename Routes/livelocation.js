@@ -47,23 +47,29 @@ liveRouter.put("/api/update/bus/:id", async (req, res) => {
   }
 });
 
-liveRouter.get('/api/live-location/bus/:id',async(req,res)=>{
-  const id = req.params
+liveRouter.get('/api/live-location/bus/:id', async (req, res) => {
+  const id = req.params.id; // Corrected: Get the id from req.params
+
   try {
-    const liveLocation = await Bus({_id: id})
-    const response = liveLocation.map((bus) => ({
-      busName: bus.busName,
-      sourceRoute: bus.sourceRoute,
-      destinationRoute: bus.destinationRoute,
-      currentRouteLocation: bus.currentRouteLocation,
-      status: bus.status
-    }));
-    
-    return res.status(200).json({ "Bus":response});
-  
+    const liveLocation = await Bus.findById(id); // Corrected: Use findById to find a bus by its _id
+
+    if (!liveLocation) {
+      return res.status(404).json({ "msg": "Bus not found" });
+    }
+
+    const response = {
+      busName: liveLocation.busName,
+      sourceRoute: liveLocation.sourceRoute,
+      destinationRoute: liveLocation.destinationRoute,
+      currentRouteLocation: liveLocation.currentRouteLocation,
+      status: liveLocation.status
+    };
+
+    return res.status(200).json({ "Bus": response });
+
   } catch (error) {
     return res.status(500).json({ "msg": "Internal server error" });
   }
-})
+});
 
   module.exports = liveRouter
