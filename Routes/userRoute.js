@@ -70,11 +70,7 @@ userRouter.post("/api/auth/login", async (req, res) => {
     });
 
     // Generate a refresh token with a 7-day expiry
-    const refreshToken = jwt.sign(
-      { userId: user._id },
-      process.env.RefreshToken,
-      { expiresIn: "7d" }
-    );
+    const refreshToken = jwt.sign({ userId: user._id },process.env.RefreshToken,{ expiresIn: "7d" });
 
     return res.status(200).json({
       msg: "Login successfully",

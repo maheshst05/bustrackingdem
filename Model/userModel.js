@@ -8,7 +8,6 @@ const userSchema = new mongoose.Schema({
   password: String,
   profileType: {
     type: String,
-    enum: ['Driver', 'Admin', 'User'], // Restrict values to these options
     default: 'User', // Set the default value to 'User'
   },
 }, { timestamps: true });
