@@ -125,10 +125,10 @@ userRouter.post("/api/auth/login/:token?", async (req, res) => {
 
 
 
-userRouter.post("/api/auth/logout",authentication, async (req, res) => {
+userRouter.post("/api/auth/logout/:token?",authentication, async (req, res) => {
     console.log(req.body)
     try {
-      const token = req.headers.authorization;
+      let token = req.params.token || null;
   
       if (!token) {
         return res.status(401).json({ msg: "No token provided", status: false });
@@ -148,7 +148,7 @@ userRouter.post("/api/auth/logout",authentication, async (req, res) => {
     }
   });
 // Define the API endpoint
-userRouter.get("/api/get-bus/", async (req, res) => {
+userRouter.get("/api/get-bus/:token?",authentication, async (req, res) => {
   try {
     // Fetch all buses from the database
     const buses = await Bus.find();
@@ -176,15 +176,6 @@ userRouter.get("/api/get-bus/", async (req, res) => {
   }
 });
 
-
-
-// userRouter.get('/api/auth/get',authentication,async(req,res)=>{
-//     try {
-//         res.send(req.body.userId)
-//     } catch (error) {
-//         console.log("error", error);
-//     }
-// })
 
 
 

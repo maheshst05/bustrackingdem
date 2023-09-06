@@ -5,7 +5,7 @@ require("dotenv").config();
 const authentication = async (req, res, next) => {
   try {
     
-    const accessToken = req.params.token
+    const accessToken = req.params.token 
     
     if (!accessToken) {
       return res.status(401).json({ msg: "Please log in to continue." });

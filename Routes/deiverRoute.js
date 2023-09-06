@@ -124,10 +124,11 @@ driverRouter.post("/api/driver/login", async (req, res) => {
 
 
 
-driverRouter.post("/api/auth/logout", authentication, async (req, res) => {
+driverRouter.post("/api/auth/logout:token?", authentication, async (req, res) => {
    console.log(req.body)
   try {
-    const token = req.headers.authorization;
+
+    let token = req.params.token || null;
 
     if (!token) {
       return res.status(401).json({ msg: "No token provided", status: false });
@@ -147,7 +148,7 @@ driverRouter.post("/api/auth/logout", authentication, async (req, res) => {
   }
 });
 
-driverRouter.get("/api/get/bus/",authentication,async(req,res)=>{
+driverRouter.get("/api/get/bus/:token?",authentication,async(req,res)=>{
     const driverID = req.body.userId;
     try {
       // consle.log(req.body.userId)
