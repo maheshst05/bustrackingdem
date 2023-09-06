@@ -72,7 +72,7 @@ userRouter.post("/api/auth/login/:token?", async (req, res) => {
       });
 
       return res.status(200).json({
-        msg: "Login successfully with a new token",
+        msg: "Login successfully",
         status: true,
         accessToken: newAccessToken,
         profileType: user.profileType,
@@ -101,7 +101,7 @@ userRouter.post("/api/auth/login/:token?", async (req, res) => {
         });
   
         return res.status(200).json({
-          msg: "Login successfully with a new token new new",
+          msg: "Login successfully",
           status: true,
           accessToken: newAccessToken,
           profileType: user.profileType,
@@ -109,7 +109,7 @@ userRouter.post("/api/auth/login/:token?", async (req, res) => {
       }
 
       return res.status(200).json({
-        msg: "Login successfully with a valid token",
+        msg: "Login successfully",
         status: true,
         accessToken: accessToken, // You can also return the same token if it's still valid
         profileType: decode.userId.profileType, // Extract the profile type from the token payload

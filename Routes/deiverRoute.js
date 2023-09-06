@@ -49,54 +49,80 @@ driverRouter.post("/api/driver/reg", async (req, res) => {
 driverRouter.post("/api/driver/login", async (req, res) => {
   try {
     const { phoneNo, password, grant_type } = req.body;
+    
+    let accessToken = req.params.token || null;
 
-    if (grant_type !== "password") {
-      return res.status(400).json({ msg: "Invalid grant_type", status: false });
+    // Check if the grant_type is "password" or if the token is expired
+    if (grant_type === "password" || accessToken === null) {
+      // Generate a new token for the same user
+      const user = await Driver.findOne({ phoneNo });
+      if (!user) {
+        return res.status(401).json({ msg: "Invalid credentials", status: false });
+      }
+
+      // Compare passwords
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+        return res.status(401).json({ msg: "Invalid credentials", status: false });
+      }
+
+      const newAccessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "1d", 
+      });
+
+      return res.status(200).json({
+        msg: "Login successfully",
+        status: true,
+        accessToken: newAccessToken,
+        profileType: user.profileType,
+      });
     }
 
-    // Find the user by phone number
-    const user = await Driver.findOne({ phoneNo });
-    if (!user) {
-      return res.status(401).json({ msg: "Invalid credentials", status: false });
+    else if(grant_type=='refresh_token'){
+    const Logouttoken = await Logout.findOne({
+      refreshToken: accessToken,
+    });
+
+    if (Logouttoken) {
+      return res.status(401).json({ msg: "You are logged out. Please log in again." });
     }
 
-    // Compare passwords  ads
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      return res.status(401).json({ msg: "Invalid credentials", status: false });
-    }
+    // Verify the token and handle accordingly...
+    jwt.verify(accessToken, process.env.JWT_SECRET, async (err, decode) => {
+      if (err) {
+        const user = await Driver.findOne({ phoneNo });
+        if (!user) {
+          return res.status(401).json({ msg: "Invalid credentials", status: false });
+        }
+  
+        const newAccessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+          expiresIn: "1d", 
+        });
+  
+        return res.status(200).json({
+          msg: "Login successfully",
+          status: true,
+          accessToken: newAccessToken,
+          profileType: user.profileType,
+        });
+      }
 
-    // Generate an access token with a 7-hour expiry
-    const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7h", // 7 hours
+      return res.status(200).json({
+        msg: "Login successfully",
+        status: true,
+        accessToken: accessToken, // You can also return the same token if it's still valid
+        profileType: decode.userId.profileType, // Extract the profile type from the token payload
+      });
     });
-
-    // Store the access token if needed (optional)
-    const accessTokenstore = new Token({
-      userId: user._id,
-      tokenType: "access_token",
-      tokenValue: accessToken,
-    });
-    await accessTokenstore.save();
-
-    // Generate a refresh token with a 7-day expiry
-    const refreshToken = jwt.sign(
-      { userId: user._id },
-      process.env.RefreshToken,
-      { expiresIn: "7d" } // 7 days
-    );
-
-    return res.status(200).json({
-      msg: "Login successfully",
-      status: true,
-      accessToken,
-      refreshToken,
-    });
+  }
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "An error occurred", status: false });
   }
 });
+
+
+
 
 driverRouter.post("/api/auth/logout", authentication, async (req, res) => {
    console.log(req.body)
