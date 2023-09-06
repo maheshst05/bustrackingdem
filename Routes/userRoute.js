@@ -5,7 +5,7 @@ const User = require("../Model/userModel");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const Logout = require("../Model/LogoutModel")
-const authentication = require("../Middleware/authentication")
+ const authentication = require("../Middleware/authentication")
 const Token = require("../Model/tokenModel")
 const Bus  =  require("../Model/busModel")
 userRouter.post("/api/auth/register", async (req, res) => {
@@ -33,7 +33,7 @@ userRouter.post("/api/auth/register", async (req, res) => {
       phoneNo,
       dob,
       age,
-      profileType, // Ensure profileType is included here
+      profileType,
       password: hashedPassword,
     });
 
@@ -44,47 +44,85 @@ userRouter.post("/api/auth/register", async (req, res) => {
   }
 });
 
-userRouter.post("/api/auth/login", async (req, res) => {
+
+
+
+userRouter.post("/api/auth/login/:token?", async (req, res) => {
   try {
     const { phoneNo, password, grant_type } = req.body;
+    
+    let accessToken = req.params.token || null;
 
-    if (grant_type !== 'password') {
-      return res.status(400).json({ msg: "Invalid grant_type", status: false });
+    // Check if the grant_type is "password" or if the token is expired
+    if (grant_type === "password" || accessToken === null) {
+      // Generate a new token for the same user
+      const user = await User.findOne({ phoneNo });
+      if (!user) {
+        return res.status(401).json({ msg: "Invalid credentials", status: false });
+      }
+
+      // Compare passwords
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+        return res.status(401).json({ msg: "Invalid credentials", status: false });
+      }
+
+      const newAccessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "1d", 
+      });
+
+      return res.status(200).json({
+        msg: "Login successfully with a new token",
+        status: true,
+        accessToken: newAccessToken,
+        profileType: user.profileType,
+      });
     }
 
-    // Find the user by phone number
-    const user = await User.findOne({ phoneNo });
-    if (!user) {
-      return res.status(401).json({ msg: "Invalid credentials", status: false });
-    }
-
-    // Compare passwords
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      return res.status(401).json({ msg: "Invalid credentials", status: false });
-    }
-
-    // Generate an access token with a 1-day expiry (24 hours)
-    const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
+    else if(grant_type=='refresh_token'){
+    const Logouttoken = await Logout.findOne({
+      refreshToken: accessToken,
     });
 
-    // Generate a refresh token with a 7-day expiry
-    const refreshToken = jwt.sign({ userId: user._id },process.env.RefreshToken,{ expiresIn: "7d" });
+    if (Logouttoken) {
+      return res.status(401).json({ msg: "You are logged out. Please log in again." });
+    }
 
-    return res.status(200).json({
-      msg: "Login successfully",
-      status: true,
-      accessToken,
-      refreshToken,
-      profileType:user.profileType
-      
+    // Verify the token and handle accordingly...
+    jwt.verify(accessToken, process.env.JWT_SECRET, async (err, decode) => {
+      if (err) {
+        const user = await User.findOne({ phoneNo });
+        if (!user) {
+          return res.status(401).json({ msg: "Invalid credentials", status: false });
+        }
+  
+        const newAccessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+          expiresIn: "1d", 
+        });
+  
+        return res.status(200).json({
+          msg: "Login successfully with a new token new new",
+          status: true,
+          accessToken: newAccessToken,
+          profileType: user.profileType,
+        });
+      }
+
+      return res.status(200).json({
+        msg: "Login successfully with a valid token",
+        status: true,
+        accessToken: accessToken, // You can also return the same token if it's still valid
+        profileType: decode.userId.profileType, // Extract the profile type from the token payload
+      });
     });
+  }
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "An error occurred", status: false });
   }
 });
+
+
 
 
 userRouter.post("/api/auth/logout",authentication, async (req, res) => {
@@ -110,7 +148,7 @@ userRouter.post("/api/auth/logout",authentication, async (req, res) => {
     }
   });
 // Define the API endpoint
-userRouter.get("/api/get-bus/", authentication, async (req, res) => {
+userRouter.get("/api/get-bus/", async (req, res) => {
   try {
     // Fetch all buses from the database
     const buses = await Bus.find();
