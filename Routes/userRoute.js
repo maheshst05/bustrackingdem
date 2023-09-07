@@ -97,7 +97,7 @@ userRouter.post("/api/auth/login/:token?", async (req, res) => {
           return res.status(401).json({ msg: "Invalid credentials", status: false });
         }
   
-        const newAccessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+        const newAccessToken = jwt.sign({ userId: user._id ,phoneNo:user.phoneNo}, process.env.JWT_SECRET, {
           expiresIn: "1d", 
         });
   
