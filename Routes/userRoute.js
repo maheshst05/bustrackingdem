@@ -75,7 +75,7 @@ userRouter.post("/api/auth/login/:token?", async (req, res) => {
         msg: "Login successfully",
         status: true,
         accessToken: newAccessToken,
-        user:user
+        user
       });
     }
 
@@ -104,7 +104,7 @@ userRouter.post("/api/auth/login/:token?", async (req, res) => {
           msg: "Login successfully",
           status: true,
           accessToken: newAccessToken,
-          user:user
+          user
         });
       }
 
@@ -112,7 +112,7 @@ userRouter.post("/api/auth/login/:token?", async (req, res) => {
         msg: "Login successfully",
         status: true,
         accessToken: accessToken, // You can also return the same token if it's still valid
-        user:decode,
+       "user":decode.user
         
       });
     });
