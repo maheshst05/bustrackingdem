@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const busSchema = new mongoose.Schema({
   busName: String,
+  driverName:String,
   driverId: String,
   route: String,
   time: String,

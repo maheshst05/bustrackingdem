@@ -159,12 +159,12 @@ userRouter.get("/api/get-bus/:token?",authentication, async (req, res) => {
     if (!buses || buses.length === 0) {
       return res.status(404).json({ msg: "Buses not found", status: false });
     }
-
+console.log(buses)
     // Construct the response object with an array of fetched buses
     const response = buses.map((bus) => ({
       id: bus._id,
-      busName: bus.busName,
-      driver_name: bus.driver_name,
+      busName: bus.driverName,
+      driver_name: bus.driverName,
       route: bus.route,
       time: bus.time,
       sourceRoute: bus.sourceRoute,
