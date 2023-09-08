@@ -26,6 +26,10 @@ const busSchema = new mongoose.Schema({
       longitudeDelta: Number,
     
   },
+  stops:[{
+    latitude: Number,
+      longitude: Number
+  }],
   status: String,
 }, { timestamps: true });
 

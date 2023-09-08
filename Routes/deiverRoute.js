@@ -179,7 +179,7 @@ driverRouter.get("/api/get/bus/:token?",authentication,async(req,res)=>{
 
 driverRouter.put("/api/update/bus/:id", async (req, res) => {
   const busId = req.params.id;
-  const { status, busName, route, sourceRoute, destinationRoute } = req.body; // Extract fields from req.body
+  const { status, busName, route, sourceRoute, destinationRoute ,stops} = req.body; // Extract fields from req.body
 
   try {
     const updatedBus = await Bus.findOneAndUpdate(
@@ -190,7 +190,8 @@ driverRouter.put("/api/update/bus/:id", async (req, res) => {
           busName: busName,
           route: route,
           sourceRoute: sourceRoute,
-          destinationRoute: destinationRoute
+          destinationRoute: destinationRoute,
+          stops:stops
         }
       },
       { new: true } // Return the updated document
