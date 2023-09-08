@@ -163,7 +163,7 @@ console.log(buses)
     // Construct the response object with an array of fetched buses
     const response = buses.map((bus) => ({
       id: bus._id,
-      busName: bus.driverName,
+      busName: bus.busName,
       driver_name: bus.driverName,
       route: bus.route,
       time: bus.time,
