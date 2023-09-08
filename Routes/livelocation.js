@@ -58,6 +58,7 @@ liveRouter.get('/api/live-location/bus/:id', async (req, res) => {
     }
 
     const response = {
+      driverId:liveLocation.driverId,
       busName: liveLocation.busName,
       sourceRoute: liveLocation.sourceRoute,
       destinationRoute: liveLocation.destinationRoute,

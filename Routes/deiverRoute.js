@@ -149,12 +149,12 @@ driverRouter.post("/api/auth/logout:token?", authentication, async (req, res) =>
 });
 
 driverRouter.get("/api/get/bus/:token?",authentication,async(req,res)=>{
-    const driverID = req.body.userId;
+    //const driverID = req.body.userId;
     try {
       // consle.log(req.body.userId)
-    console.log(req.body.userId)
+    //console.log(req.body.userId)
         // Fetch the bus information from the database using the provided busId
-        const bus = await Bus.find({driverId:driverID});
+        const bus = await Bus.find();
     return res.send(bus)
         if (!bus) {
           return res.status(404).json({ msg: "No bus assigend you", status: false });
