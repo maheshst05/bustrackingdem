@@ -160,19 +160,31 @@ userRouter.get("/api/get-bus/:token?",authentication, async (req, res) => {
       return res.status(404).json({ msg: "Buses not found", status: false });
     }
 
-    const response = buses.map((bus) => ({
-      id: bus._id,
-      busName: bus.busName,
-      driver_name: bus.driverName,
-      route: bus.route,
-      time: bus.time,
-      sourceRoute: bus.sourceRoute,
-      destinationRoute: bus.destinationRoute,
-      currentRouteLocation:bus.currentRouteLocation,
-      status: bus.status,
-     stops:bus.stops   
-    }));
+    const response = buses.map((bus) => {
+      const commonFields = {
+        id: bus._id,
+        busName: bus.busName,
+        driver_name: bus.driverName,
+        route: bus.route,
+        time: bus.time,
+        sourceRoute: bus.sourceRoute,
+        destinationRoute: bus.destinationRoute,
+        status: bus.status,
+        stops: bus.stops,
+      };
 
+      if (bus.status === "STOP") {
+        return {
+          ...commonFields,
+          currentRouteLocation: bus.destinationRoute,
+        };
+      } else {
+        return {
+          ...commonFields,
+          currentRouteLocation: bus.currentRouteLocation,
+        };
+      }
+    });
 
     return res.status(200).json(response);
   } catch (error) {
@@ -180,6 +192,7 @@ userRouter.get("/api/get-bus/:token?",authentication, async (req, res) => {
     return res.status(500).json({ msg: "An error occurred", status: false });
   }
 });
+
 
 userRouter.get("/api/get/buses/live/:token?/:id",authentication, async (req, res) => {
   const id = req.params.id;
