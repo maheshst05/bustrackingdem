@@ -181,17 +181,21 @@ userRouter.get("/api/get-bus/:token?",authentication, async (req, res) => {
   }
 });
 
-
-
-
-userRouter.post("/",async(req,res)=>{
+userRouter.get("/api/get/buses/live/:token?/:id",authentication, async (req, res) => {
+  const id = req.params.id;
   try {
-    const bus = new Bus(req.body)
-    await bus.save()
-    res.send("add")
-  } catch (error) {
-    
-  }
-})
+  
+      const buses = await Bus.find({ _id: { $ne: req.params.id } }).select([
+        "_id",
+        "busName",
+        "currentRouteLocation",
+      ]);
+      return res.status(200).json(buses);
+    } catch (error) {
+      console.log(error.message)
+    }
+  })
+  
+
 
 module.exports = userRouter;
