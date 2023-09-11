@@ -31,6 +31,7 @@ const busSchema = new mongoose.Schema({
       longitude: Number
   }],
   status: String,
+  heading:Number
 }, { timestamps: true });
 
 const Bus = mongoose.model('Bus', busSchema);

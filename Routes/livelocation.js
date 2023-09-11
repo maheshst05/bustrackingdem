@@ -2,10 +2,9 @@ const express = require('express')
 const liveRouter = express.Router()
 const Bus =  require("../Model/busModel")
 
-
 liveRouter.put("/api/update/bus/:id", async (req, res) => {
   const busId = req.params.id;
-  const { sourceRoute, destinationRoute, busName, currentRouteLocation } = req.body;
+  const { sourceRoute, destinationRoute, busName, currentRouteLocation, heading } = req.body;
 
   try {
     const updatedBus = await Bus.findOneAndUpdate(
@@ -30,10 +29,11 @@ liveRouter.put("/api/update/bus/:id", async (req, res) => {
             longitude: currentRouteLocation.longitude,
             latitudeDelta: currentRouteLocation.latitudeDelta,
             longitudeDelta: currentRouteLocation.longitudeDelta
-          }
+          },
+          heading: heading 
         }
       },
-      { new: true } // Return the updated document
+      { new: true }
     );
 
     if (updatedBus) {
@@ -46,6 +46,7 @@ liveRouter.put("/api/update/bus/:id", async (req, res) => {
     return res.status(500).json({ "msg": "Internal server error" });
   }
 });
+
 
 liveRouter.get('/api/live-location/bus/:id', async (req, res) => {
   const id = req.params.id; // Corrected: Get the id from req.params
