@@ -171,6 +171,7 @@ userRouter.get("/api/get-bus/:token?",authentication, async (req, res) => {
         destinationRoute: bus.destinationRoute,
         status: bus.status,
         stops: bus.stops,
+        polyline:bus.polyline
       };
 
       if (bus.status === "STOP") {

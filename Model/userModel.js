@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   password: String,
   profileType: {
     type: String,
-    default: 'User', // Set the default value to 'User'
+    default: 'User', 
   },
 }, { timestamps: true });
 

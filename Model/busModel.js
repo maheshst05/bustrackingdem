@@ -30,8 +30,13 @@ const busSchema = new mongoose.Schema({
     latitude: Number,
       longitude: Number
   }],
+
   status: String,
-  heading:Number
+  heading:Number,
+  polyline: [{
+    latitude: Number,
+    longitude: Number
+  }]
 }, { timestamps: true });
 
 const Bus = mongoose.model('Bus', busSchema);
