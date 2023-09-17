@@ -4,13 +4,14 @@ const bcrypt = require("bcrypt");
 const User = require("../Model/userModel");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const Logout = require("../Model/LogoutModel")
- const authentication = require("../Middleware/authentication")
-const Token = require("../Model/tokenModel")
-const Bus  =  require("../Model/busModel")
+const Logout = require("../Model/LogoutModel");
+const authentication = require("../Middleware/authentication");
+const BusRoute = require("../Model/busRoute");
+
 userRouter.post("/api/auth/register", async (req, res) => {
   try {
-    const { name, email, password, dob, phoneNo, age, profileType } = req.body;
+    const { name, email, password, dob, phoneNo, age, profileType, licenceNo } =
+      req.body;
 
     // Check if the phone number is already used
     const phoneNoCheck = await User.findOne({ phoneNo });
@@ -44,13 +45,10 @@ userRouter.post("/api/auth/register", async (req, res) => {
   }
 });
 
-
-
-
 userRouter.post("/api/auth/login/:token?", async (req, res) => {
   try {
     const { phoneNo, password, grant_type } = req.body;
-    
+
     let accessToken = req.params.token || null;
 
     // Check if the grant_type is "password" or if the token is expired
@@ -58,103 +56,119 @@ userRouter.post("/api/auth/login/:token?", async (req, res) => {
       // Generate a new token for the same user
       const user = await User.findOne({ phoneNo });
       if (!user) {
-        return res.status(401).json({ msg: "Invalid credentials", status: false });
+        return res
+          .status(401)
+          .json({ msg: "Invalid credentials", status: false });
       }
 
       // Compare passwords
       const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
-        return res.status(401).json({ msg: "Invalid credentials", status: false });
+        return res
+          .status(401)
+          .json({ msg: "Invalid credentials", status: false });
       }
 
-      const newAccessToken = jwt.sign({ userId: user._id ,user:user}, process.env.JWT_SECRET, {
-        expiresIn: "1d", 
-      });
+      const newAccessToken = jwt.sign(
+        { userId: user._id, user: user },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "1d",
+        }
+      );
 
       return res.status(200).json({
         msg: "Login successfully",
         status: true,
         accessToken: newAccessToken,
-        user
+        user,
       });
-    }
+    } else if (grant_type == "refresh_token") {
+      const Logouttoken = await Logout.findOne({
+        refreshToken: accessToken,
+      });
 
-    else if(grant_type=='refresh_token'){
-    const Logouttoken = await Logout.findOne({
-      refreshToken: accessToken,
-    });
+      if (Logouttoken) {
+        return res
+          .status(401)
+          .json({ msg: "You are logged out. Please log in again." });
+      }
 
-    if (Logouttoken) {
-      return res.status(401).json({ msg: "You are logged out. Please log in again." });
-    }
+      // Verify the token and handle accordingly...
+      jwt.verify(accessToken, process.env.JWT_SECRET, async (err, decode) => {
+        if (err) {
+          const user = await User.findOne({ phoneNo });
+          if (!user) {
+            return res
+              .status(401)
+              .json({ msg: "Invalid credentials", status: false });
+          }
 
-    // Verify the token and handle accordingly...
-    jwt.verify(accessToken, process.env.JWT_SECRET, async (err, decode) => {
-      if (err) {
-        const user = await User.findOne({ phoneNo });
-        if (!user) {
-          return res.status(401).json({ msg: "Invalid credentials", status: false });
+          const newAccessToken = jwt.sign(
+            { userId: user._id, user: user },
+            process.env.JWT_SECRET,
+            {
+              expiresIn: "1d",
+            }
+          );
+
+          return res.status(200).json({
+            msg: "Login successfully",
+            status: true,
+            accessToken: newAccessToken,
+            user,
+          });
         }
-  
-        const newAccessToken = jwt.sign({ userId: user._id ,user:user}, process.env.JWT_SECRET, {
-          expiresIn: "1d", 
-        });
-  
+
         return res.status(200).json({
           msg: "Login successfully",
           status: true,
-          accessToken: newAccessToken,
-          user
+          accessToken: accessToken, // You can also return the same token if it's still valid
+          user: decode.user,
         });
-      }
-
-      return res.status(200).json({
-        msg: "Login successfully",
-        status: true,
-        accessToken: accessToken, // You can also return the same token if it's still valid
-       "user":decode.user
-        
       });
-    });
-  }else{
-    return res.status(500).json({ msg: "Invalid grant_type", status: false });
-  }
+    } else {
+      return res.status(500).json({ msg: "Invalid grant_type", status: false });
+    }
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "An error occurred", status: false });
   }
 });
 
-
-
-
-userRouter.post("/api/auth/logout/:token?",authentication, async (req, res) => {
-    console.log(req.body)
+userRouter.post(
+  "/api/auth/logout/:token?",
+  authentication,
+  async (req, res) => {
+    console.log(req.body);
     try {
       let token = req.params.token || null;
-  
+
       if (!token) {
-        return res.status(401).json({ msg: "No token provided", status: false });
+        return res
+          .status(401)
+          .json({ msg: "No token provided", status: false });
       }
-  
+
       const blacklistedToken = new Logout({
         refreshToken: token,
-        userId: req.body.userId  // Use req.userId from the authentication middleware
+        userId: req.body.userId, // Use req.userId from the authentication middleware
       });
-  
+
       await blacklistedToken.save();
-  
+
       return res.status(200).json({ msg: "You are logged out", status: true });
     } catch (error) {
       console.error(error.message);
       return res.status(500).json({ msg: "An error occurred", status: false });
     }
-  });
-// Define the API endpoint
-userRouter.get("/api/get-bus/:token?",authentication, async (req, res) => {
+  }
+);
+
+//get all buses to end user if status Stop sho
+userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
   try {
-    // Fetch all buses from the database
-    const buses = await Bus.find();
+    const buses = await BusRoute.find();
 
     if (!buses || buses.length === 0) {
       return res.status(404).json({ msg: "Buses not found", status: false });
@@ -171,7 +185,7 @@ userRouter.get("/api/get-bus/:token?",authentication, async (req, res) => {
         destinationRoute: bus.destinationRoute,
         status: bus.status,
         stops: bus.stops,
-        polyline:bus.polyline
+        polyline: bus.polyline,
       };
 
       if (bus.status === "STOP") {
@@ -194,22 +208,21 @@ userRouter.get("/api/get-bus/:token?",authentication, async (req, res) => {
   }
 });
 
-
-userRouter.get("/api/get/buses/live/:token?/:id",authentication, async (req, res) => {
-  const id = req.params.id;
-  try {
-  
-      const buses = await Bus.find({ _id: { $ne: req.params.id } }).select([
-        "_id",
-        "busName",
-        "currentRouteLocation",
-      ]);
+//get live buses
+userRouter.get(
+  "/api/get/buses/live/:token?/:id",
+  authentication,
+  async (req, res) => {
+    const id = req.params.id;
+    try {
+      const buses = await BusRoute.find({ _id: { $ne: req.params.id } }).select(
+        ["_id", "busName", "currentRouteLocation"]
+      );
       return res.status(200).json(buses);
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     }
-  })
-  
-
+  }
+);
 
 module.exports = userRouter;

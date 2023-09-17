@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const routeSchema = new mongoose.Schema({
   route: String,
   sourceRoute: {
@@ -13,9 +13,21 @@ const routeSchema = new mongoose.Schema({
     latitudeDelta: Number,
     longitudeDelta: Number,
   },
+  stops: [
+    {
+      latitude: Number,
+      longitude: Number,
+      title: String,
+    },
+  ],
+  polyline: [
+    {
+      latitude: Number,
+      longitude: Number,
+    },
+  ],
 });
 
-
-const Route = mongoose.model('Route', routeSchema);
+const Route = mongoose.model("Route", routeSchema);
 
 module.exports = Route;

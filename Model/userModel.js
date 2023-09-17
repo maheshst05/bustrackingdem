@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   phoneNo: Number,
   email: String,
   password: String,
+  licenceNo:String,
   profileType: {
     type: String,
     default: 'User', 

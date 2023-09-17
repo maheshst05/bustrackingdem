@@ -6,8 +6,7 @@ const { Connection } = require("./db");
 const liveRouter = require("./Routes/livelocation");
 const driverRouter = require("./Routes/deiverRoute");
 const userRouter = require('./Routes/userRoute');
-const roteRouter = require('./Routes/routeRoute');
-
+const AdminRouter = require("./Routes/adminRouter");
 app.use(express.json());
 app.use(cors());
 
@@ -17,11 +16,10 @@ require("dotenv").config();
 // Middleware for user authentication using JWT
 const authentication = require("./Middleware/authentication");
 
-// Define your routes
 app.use("/driver", driverRouter);
 app.use("/user", userRouter);
 app.use("/live", liveRouter);
-app.use("/route", roteRouter);
+app.use("/",AdminRouter)
 
 
 // Start the server

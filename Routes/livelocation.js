@@ -1,13 +1,14 @@
 const express = require('express')
 const liveRouter = express.Router()
-const Bus =  require("../Model/busModel")
+const BusRoute =  require("../Model/busRoute")
 
+//live update
 liveRouter.put("/api/update/bus/:id", async (req, res) => {
   const busId = req.params.id;
   const { sourceRoute, destinationRoute, busName, currentRouteLocation, heading } = req.body;
 
   try {
-    const updatedBus = await Bus.findOneAndUpdate(
+    const updatedBus = await BusRoute.findOneAndUpdate(
       { _id: busId },
       {
         $set: {
@@ -49,10 +50,9 @@ liveRouter.put("/api/update/bus/:id", async (req, res) => {
 
 
 liveRouter.get('/api/live-location/bus/:id', async (req, res) => {
-  const id = req.params.id; // Corrected: Get the id from req.params
-
-  try {
-    const liveLocation = await Bus.findById(id); // Corrected: Use findById to find a bus by its _id
+  const id = req.params.id;
+try {
+    const liveLocation = await BusRoute.findById(id); 
 
     if (!liveLocation) {
       return res.status(404).json({ "msg": "Bus not found" });
