@@ -1,29 +1,59 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const busRouteSchema = new mongoose.Schema({
   time: String,
-  status: {type: String,default:'STOP'},
+  status: { type: String, default: "STOP" },
   bus_details: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Bus',
+    _id: String,
+    busName: String,
+    busNo: String,
   },
   route_details: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Route',
-  },
-  driver_details: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Driver',
-  },
-  currentRouteLocation: {
+    _id: String,
+    route: String,
+    sourceRoute: {
+      latitude: Number,
+      longitude: Number,
+      latitudeDelta: Number,
+      longitudeDelta: Number,
+    },
+    destinationRoute: {
+      latitude: Number,
+      longitude: Number,
+      latitudeDelta: Number,
+      longitudeDelta: Number,
+    },
+    stops: [
+      {
         latitude: Number,
         longitude: Number,
-        latitudeDelta:Number,
-        longitudeDelta:Number
-      }
-      ,heading: Number
+        title: String,
+      },
+    ],
+    polyline: [
+      {
+        latitude: Number,
+        longitude: Number,
+      },
+    ],
+  },
+  driver_details: {
+    _id: String,
+    name: String,
+    db: String,
+    licenceNo: String,
+    phoneNo: Number,
+    email: String,
+  },
+  currentRouteLocation: {
+    latitude: Number,
+    longitude: Number,
+    latitudeDelta: Number,
+    longitudeDelta: Number,
+  },
+  heading: Number,
 });
 
-const BusRoute = mongoose.model('BusRoute', busRouteSchema);
+const BusRoute = mongoose.model("BusRoute", busRouteSchema);
 
 module.exports = BusRoute;
