@@ -6,18 +6,20 @@ const routeSchema = new mongoose.Schema({
     longitude: Number,
     latitudeDelta: Number,
     longitudeDelta: Number,
+    name:String,
   },
   destinationRoute: {
     latitude: Number,
     longitude: Number,
     latitudeDelta: Number,
     longitudeDelta: Number,
+    name: String,
   },
   stops: [
     {
       latitude: Number,
       longitude: Number,
-      title: String,
+      name: String,
     },
   ],
   polyline: [
