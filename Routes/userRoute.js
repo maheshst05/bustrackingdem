@@ -208,7 +208,7 @@ userRouter.post(
 //   }
 // });
 
-userRouter.get("/bus-routes", async (req, res) => {
+userRouter.get("/api/get-bus/:token?", authentication,async(req, res) => {
   try {
     const busRoutes = await BusRoute.find({}, {
       _id: 1,
