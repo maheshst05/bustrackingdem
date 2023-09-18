@@ -165,48 +165,87 @@ userRouter.post(
   }
 );
 
-//get all buses to end user if status Stop sho
-userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
+// get all buses to end user if status Stop sho
+// userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
+//   try {
+//     const buses = await BusRoute.find();
+
+//     if (!buses || buses.length === 0) {
+//       return res.status(404).json({ msg: "Buses not found", status: false });
+//     }
+
+//     const response = buses.map((bus) => {
+//       const commonFields = {
+        // id: bus._id,
+        // busName: bus.busName,
+        // driver_name: bus.driverName,
+        // route: bus.route,
+        // time: bus.time,
+        // sourceRoute: bus.sourceRoute,
+        // destinationRoute: bus.destinationRoute,
+        // status: bus.status,
+        // stops: bus.stops,
+        // polyline: bus.polyline,
+//       };
+
+//       if (bus.status === "STOP") {
+//         return {
+//           ...commonFields,
+//           currentRouteLocation: bus.destinationRoute,
+//         };
+//       } else {
+//         return {
+//           ...commonFields,
+//           currentRouteLocation: bus.currentRouteLocation,
+//         };
+//       }
+//     });
+
+//     return res.status(200).json(response);
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ msg: "An error occurred", status: false });
+//   }
+// });
+
+userRouter.get("/bus-routes", async (req, res) => {
   try {
-    const buses = await BusRoute.find();
-
-    if (!buses || buses.length === 0) {
-      return res.status(404).json({ msg: "Buses not found", status: false });
-    }
-
-    const response = buses.map((bus) => {
-      const commonFields = {
-        id: bus._id,
-        busName: bus.busName,
-        driver_name: bus.driverName,
-        route: bus.route,
-        time: bus.time,
-        sourceRoute: bus.sourceRoute,
-        destinationRoute: bus.destinationRoute,
-        status: bus.status,
-        stops: bus.stops,
-        polyline: bus.polyline,
-      };
-
-      if (bus.status === "STOP") {
-        return {
-          ...commonFields,
-          currentRouteLocation: bus.destinationRoute,
-        };
-      } else {
-        return {
-          ...commonFields,
-          currentRouteLocation: bus.currentRouteLocation,
-        };
-      }
+    const busRoutes = await BusRoute.find({}, {
+      _id: 1,
+      bus_details: { busName: 1 },
+      driver_details: { name: 1 },
+      route_details: {
+        route: 1,
+        sourceRoute: 1,
+        destinationRoute: 1,
+        stops: 1,
+        polyline: 1
+      },
+      time: 1,
+      status: 1,
+      currentRouteLocation: 1,
     });
 
-    return res.status(200).json(response);
+    // Conditionally set currentRouteLocation based on the status field
+    const modifiedBusRoutes = busRoutes.map((busRoute) => {
+      if (busRoute.status === 'STOP') {
+        return {
+          ...busRoute.toObject(),
+          currentRouteLocation: busRoute.route_details.sourceRoute
+        };
+      }
+      return busRoute;
+    });
+
+    res.json(modifiedBusRoutes);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ msg: "An error occurred", status: false });
+    console.error("Error retrieving bus routes:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+
 
 //get live buses
 userRouter.get(
