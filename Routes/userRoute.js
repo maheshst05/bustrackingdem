@@ -208,7 +208,7 @@ userRouter.post(
 //   }
 // });
 
-userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
+userRouter.get("/api/get-bus/:token?", authentication,async(req, res) => {
   try {
     const busRoutes = await BusRoute.find({}, {
       _id: 1,
@@ -223,39 +223,18 @@ userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
       },
       time: 1,
       status: 1,
+      currentRouteLocation: 1,
     });
 
     // Conditionally set currentRouteLocation based on the status field
     const modifiedBusRoutes = busRoutes.map((busRoute) => {
-      if (busRoute.status !== 'STOP') {
+      if (busRoute.status === 'STOP') {
         return {
-          id: busRoute._id,
-          busName: busRoute.bus_details.busName,
-          driver_name: busRoute.driver_details.name,
-          route: busRoute.route_details.route,
-          time: busRoute.time,
-          sourceRoute: busRoute.route_details.sourceRoute,
-          destinationRoute: busRoute.route_details.destinationRoute,
-          status: busRoute.status,
-          stops: busRoute.route_details.stops,
-          polyline: busRoute.route_details.polyline,
-          currentRouteLocation: busRoute.route_details.destinationRoute,
-        };
-      } else {
-        return {
-          id: busRoute._id,
-          busName: busRoute.bus_details.busName,
-          driver_name: busRoute.driver_details.name,
-          route: busRoute.route_details.route,
-          time: busRoute.time,
-          sourceRoute: busRoute.route_details.sourceRoute,
-          destinationRoute: busRoute.route_details.destinationRoute,
-          status: busRoute.status,
-          stops: busRoute.route_details.stops,
-          polyline: busRoute.route_details.polyline,
-          currentRouteLocation: busRoute.route_details.sourceRoute,
+          ...busRoute.toObject(),
+          currentRouteLocation: busRoute.route_details.sourceRoute
         };
       }
+      return busRoute;
     });
 
     res.json(modifiedBusRoutes);
