@@ -29,7 +29,7 @@ const busRouteSchema = new mongoose.Schema({
       {
         latitude: Number,
         longitude: Number,
-        title: String,
+        name: String,
       },
     ],
     polyline: [
