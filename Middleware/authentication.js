@@ -4,9 +4,8 @@ require("dotenv").config();
 
 const authentication = async (req, res, next) => {
   try {
-    
-    const accessToken = req.params.token 
-    
+    const accessToken = req.params.token;
+
     if (!accessToken) {
       return res.status(401).json({ msg: "Please log in to continue." });
     }
@@ -27,10 +26,8 @@ const authentication = async (req, res, next) => {
           .json({ msg: "Your session has expired, please login" });
       }
 
-      // Store the userId in the req object
-
-      req.body.userId = decode.userId
-      console.log(decode)
+      req.id = decode.userId;
+      //console.log(decode);
       next();
     });
   } catch (error) {

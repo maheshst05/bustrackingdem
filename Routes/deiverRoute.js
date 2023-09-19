@@ -4,75 +4,15 @@ const bcrypt = require("bcrypt");
 const authentication = require("../Middleware/authentication");
 const jwt = require("jsonwebtoken");
 
-const BusRoute = require("../Model/busRoute")
-// driverRouter.get("/api/get/bus/:token?",authentication,async(req,res)=>{
+const BusRoute = require("../Model/busRoute");
 
-//     try {
-//         const bus = await Bus.find();
-//     return res.send(bus)
-//         if (!bus) {
-//           return res.status(404).json({ msg: "No bus assigend you", status: false });
-//         }
-//       const response = {
-//           driver_name: bus.driver_name,
-//           route: bus.route,
-//           time: bus.time,
-//           sourceRoute: bus.sourceRoute,
-//           destinationRoute: bus.destinationRoute,
-//           status: bus.status
-//         };
-    
-//         return res.status(200).json(response);
-//       } catch (error) {
-//         console.error(error);
-//         return res.status(500).json({ msg: "An error occurred", status: false });
-//       }
-// })
-
-// driverRouter.put("/api/update/bus/:id", async (req, res) => {
-//   const busId = req.params.id;
-//   const { status, busName, route, sourceRoute, destinationRoute ,stops} = req.body; 
-//   try {
-//     const updatedBus = await Bus.findOneAndUpdate(
-//       { _id: busId },
-//       {
-//         $set: {
-//           status: status,
-//           busName: busName,
-//           route: route,
-//           sourceRoute: sourceRoute,
-//           destinationRoute: destinationRoute,
-//           stops:stops
-//         }
-//       },
-//       { new: true } 
-//     );
-
-//     if (updatedBus) {
-//       return res.status(200).json({ "msg": "Updated successfully", "bus": updatedBus });
-//     } else {
-//       return res.status(404).json({ "msg": "Bus not found" });
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ "msg": "Internal server error" });
-//   }
-// });
 driverRouter.put("/api/update/bus/:id", async (req, res) => {
   const busId = req.params.id;
-  const {
-    status,
-    busName,
-    route,
-    sourceRoute,
-    destinationRoute,
-    stops
-  } = req.body;
+  const { status, busName, route, sourceRoute, destinationRoute, stops } =
+    req.body;
 
   try {
     const updateFields = {};
-
-    // Check which fields are provided in the request and add them to the update object
     if (status) {
       updateFields.status = status;
     }
@@ -104,18 +44,24 @@ driverRouter.put("/api/update/bus/:id", async (req, res) => {
     );
 
     if (updatedBus) {
-      return res.status(200).json({ "msg": "Updated successfully", "bus": updatedBus });
+      return res
+        .status(200)
+        .json({ msg: "Updated successfully", bus: updatedBus });
     } else {
-      return res.status(404).json({ "msg": "Bus not found" });
+      return res.status(404).json({ msg: "Bus not found" });
     }
   } catch (error) {
     console.error("Error updating bus:", error);
-    return res.status(500).json({ "msg": "Internal server error" });
+    return res.status(500).json({ msg: "Internal server error" });
   }
 });
 
-
-
-
+//get bus that driver assigned
+driverRouter.get("/api/get/assigned/bus/:token", async (req, res) => {
+  const id=req.id
+  try {
+  
+  } catch (error) {}
+});
 
 module.exports = driverRouter;

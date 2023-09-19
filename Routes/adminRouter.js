@@ -113,16 +113,15 @@ AdminRouter.delete("/api/delete/route/:id", async (req, res) => {
   }
 });
 //get routes
-AdminRouter.get("/api/get/routes",async(req,res)=>{
-    try {
-        const routes = await Route.find()
-        return res.status(200).json({ routes });
-    } catch (error) {
-        console.error(error);
+AdminRouter.get("/api/get/routes", async (req, res) => {
+  try {
+    const routes = await Route.find();
+    return res.status(200).json({ routes });
+  } catch (error) {
+    console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
-    
-    }
-})
+  }
+});
 
 //busRoute
 //post busRoutes
@@ -142,37 +141,57 @@ AdminRouter.post("/api/post/busroute", async (req, res) => {
 
 // update BusRoutes
 AdminRouter.put("/api/update/busroute/:id", async (req, res) => {
-    const id = req.params.id;
-    try {
-      const updatedBusRoute = await BusRoute.findByIdAndUpdate({ _id: id }, req.body);
-      return res.status(200).json({ message: "Route Updated successfully" });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ msg: "Internal server error" });
-    }
-  });
+  const id = req.params.id;
+  try {
+    const updatedBusRoute = await BusRoute.findByIdAndUpdate(
+      { _id: id },
+      req.body
+    );
+    return res.status(200).json({ message: "Route Updated successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+});
 
-  //delete  BusRoutes
-  AdminRouter.delete("/api/delete/busroute/:id", async (req, res) => {
-    const id = req.params.id;
-    try {
-      const deletedBusRoute = await BusRoute.findByIdAndDelete({ _id: id });
-      return res.status(200).json({ message: " Route Deleted successfully" });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ msg: "Internal server error" });
-    }
-  });
+//delete  BusRoutes
+AdminRouter.delete("/api/delete/busroute/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const deletedBusRoute = await BusRoute.findByIdAndDelete({ _id: id });
+    return res.status(200).json({ message: " Route Deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+});
 
-  AdminRouter.get("/api/get/busroute",async(req,res)=>{
-    try {
-        const BusRoutes = await BusRoute.find()
-        return res.status(200).json({ BusRoutes });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ msg: "Internal server error" });
-       
-    }
-  })
-  
+AdminRouter.get("/api/get/busroute", async (req, res) => {
+  try {
+    const BusRoutes = await BusRoute.find();
+    return res.status(200).json({ BusRoutes });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+});
+
+//getbus by its name
+// AdminRouter.get("/api/get/res", async (req, res) => {
+//   const search = req.query.search; 
+//   try {
+//     const bus = await BusRoute.find({
+//       "bus_details.busName": { $regex: `${search}`, $options: "i" },
+//     });
+
+//     if (bus.length === 0) {
+//       res.status(404).send("Bus not found");
+//     } else {
+//       res.send(bus);
+//     }
+//   } catch (error) {
+//     res.status(500).send(error.message);
+//   }
+// });
+
 module.exports = AdminRouter;
