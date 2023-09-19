@@ -16,12 +16,14 @@ const busRouteSchema = new mongoose.Schema({
       longitude: Number,
       latitudeDelta: Number,
       longitudeDelta: Number,
+      name: String,
     },
     destinationRoute: {
       latitude: Number,
       longitude: Number,
       latitudeDelta: Number,
       longitudeDelta: Number,
+      name: String,
     },
     stops: [
       {
