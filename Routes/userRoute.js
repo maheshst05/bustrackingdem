@@ -163,45 +163,6 @@ userRouter.post(
   }
 );
 
-// userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
-//   try {
-//     const busRoutes = await BusRoute.find(
-//       {},
-//       {
-//         _id: 1,
-//         bus_details: { busName: 1 },
-//         driver_details: { name: 1 },
-//         route_details: {
-//           route: 1,
-//           sourceRoute: 1,
-//           destinationRoute: 1,
-//           stops: 1,
-//           polyline: 1,
-//         },
-//         time: 1,
-//         status: 1,
-//         currentRouteLocation: 1,
-//       }
-//     );
-
-//     // Conditionally set currentRouteLocation based on the status field
-//     const modifiedBusRoutes = busRoutes.map((busRoute) => {
-//       if (busRoute.status === "STOP") {
-//         return {
-//           ...busRoute.toObject(),
-//           currentRouteLocation: busRoute.route_details.sourceRoute,
-//         };
-//       }
-//       return busRoute;
-//     });
-
-//     res.json(modifiedBusRoutes);
-//   } catch (error) {
-//     console.error("Error retrieving bus routes:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
 //demo
 userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
   const { search } = req.query;
@@ -278,7 +239,7 @@ userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
 // );
 
 userRouter.get(
-  "/api/get/buses/live/:token?/:id",authentication,
+  "/api/get/buses/live/:token?/:id",
   async (req, res) => {
     const id = req.params.id;
     try {

@@ -57,11 +57,44 @@ driverRouter.put("/api/update/bus/:id", async (req, res) => {
 });
 
 //get bus that driver assigned
-driverRouter.get("/api/get/assigned/bus/:token", async (req, res) => {
-  const id=req.id
+driverRouter.get("/api/get/assigned/bus/:token", authentication, async (req, res) => {
+  const id = req.id;
   try {
-  
-  } catch (error) {}
+    // Assuming driver_details[0]._id is the field in the BusRoute model that holds the driver's ID
+    const buses = await BusRoute.find({ "driver_details._id": id });
+
+    if (!buses || buses.length === 0) {
+      return res.status(404).json({ error: 'No assigned buses found for this driver' });
+    }
+
+    // Create an array of bus objects with the desired properties
+    const response = buses.map(bus => ({
+      bus_details: {
+        busName: bus.bus_details.busName
+      },
+      route_details: {
+        sourceRoute: bus.route_details.sourceRoute,
+        destinationRoute: bus.route_details.destinationRoute,
+        route: bus.route_details.route,
+        stops: bus.route_details.stops,
+        polyline: bus.route_details.polyline
+      },
+      driver_details: {
+        name: bus.driver_details.name
+      },
+      currentRouteLocation: bus.currentRouteLocation,
+      _id: bus._id,
+      time: bus.time,
+      status: bus.status
+    }));
+
+    res.json(response);
+  } catch (error) {
+    // Handle any errors that occur during the query
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
+
 
 module.exports = driverRouter;
