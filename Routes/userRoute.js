@@ -163,7 +163,6 @@ userRouter.post(
   }
 );
 
-
 // userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
 //   try {
 //     const busRoutes = await BusRoute.find(
@@ -203,39 +202,35 @@ userRouter.post(
 //   }
 // });
 
-
 //demo
-userRouter.get("/api/get-bus/:token?",authentication, async (req, res) => {
+userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
   const { search } = req.query;
   try {
     // Define the search filter based on the 'search' query parameter for busName and route
     const filter = search
       ? {
           $or: [
-            { 'bus_details.busName': { $regex: search, $options: 'i' } },
-            { 'route_details.route': { $regex: search, $options: 'i' } },
+            { "bus_details.busName": { $regex: search, $options: "i" } },
+            { "route_details.route": { $regex: search, $options: "i" } },
           ],
         }
       : {};
 
-    const busRoutes = await BusRoute.find(
-      filter,
-      {
-        _id: 1,
-        bus_details: { busName: 1 },
-        driver_details: { name: 1 },
-        route_details: {
-          route: 1,
-          sourceRoute: 1,
-          destinationRoute: 1,
-          stops: 1,
-          polyline: 1,
-        },
-        time: 1,
-        status: 1,
-        currentRouteLocation: 1,
-      }
-    );
+    const busRoutes = await BusRoute.find(filter, {
+      _id: 1,
+      bus_details: { busName: 1 },
+      driver_details: { name: 1 },
+      route_details: {
+        route: 1,
+        sourceRoute: 1,
+        destinationRoute: 1,
+        stops: 1,
+        polyline: 1,
+      },
+      time: 1,
+      status: 1,
+      currentRouteLocation: 1,
+    });
 
     // Check if any results were found
     if (busRoutes.length === 0) {
@@ -260,29 +255,63 @@ userRouter.get("/api/get-bus/:token?",authentication, async (req, res) => {
   }
 });
 
+//get live bus
+// userRouter.get(
+//   "/api/get/buses/live/:token?/:id",
 
+//   async (req, res) => {
+//     const id = req.params.id;
+//     try {
+//       const bus = await BusRoute.find({ _id: { $ne: req.params.id } }).select(
+//         ["_id", "busName", "currentRouteLocation",]
+//       );
+ 
+   
+//       // console.log(bus)
+//       return res.status(200).json(bus);
+ 
+ 
+//     } catch (error) {
+//       console.log(error.message);
+//     }
+//   }
+// );
 
-
-
-
-
-
-
-//get live buses
 userRouter.get(
-  "/api/get/buses/live/:token?/:id",
-  authentication,
+  "/api/get/buses/live/:token?/:id",authentication,
   async (req, res) => {
     const id = req.params.id;
     try {
-      const buses = await BusRoute.find({ _id: { $ne: req.params.id } }).select(
-        ["_id", "busName", "currentRouteLocation"]
-      );
-      return res.status(200).json(buses);
+      const bus = await BusRoute.findById(id).select([
+        "currentRouteLocation",
+        "_id",
+        "status",
+        "route_details"
+      ]);
+
+      if (!bus) {
+        return res.status(404).json({ message: "Bus not found" });
+      }
+
+      if (bus.status === "STOP") {
+        return res.status(200).json([
+          {
+            currentRouteLocation: bus.route_details.sourceRoute,
+            _id: bus._id
+          }
+        ]);
+      
+    
+    }
+      
+      return res.status(200).json([{"currentRouteLocation":bus.currentRouteLocation,id:bus._id}]);
+      
     } catch (error) {
       console.log(error.message);
+      return res.status(500).json({ message: "Internal Server Error" });
     }
   }
 );
+
 
 module.exports = userRouter;
