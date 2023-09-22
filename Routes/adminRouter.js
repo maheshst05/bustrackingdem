@@ -21,6 +21,39 @@ AdminRouter.get("/api/get/drivers", async (req, res) => {
   }
 });
 
+//update driver
+AdminRouter.put('/api/update/driver/:id',async(req,res)=>{
+  const id = req.params.id;
+  try {
+    const driver = await User.findByIdAndUpdate({_id:id},
+      req.body
+    )
+    return res
+      .status(200)
+      .json({ message: "Driver Updated successfully"});
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  
+  }
+})
+//delete driver
+AdminRouter.delete('/api/delete/driver/:id',async(req,res)=>{
+  const id = req.params.id;
+  try {
+    const driver = await User.findByIdAndDelete({_id:id})
+    return res
+      .status(200)
+      .json({ message: "Driver deleted successfully"});
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  
+  }
+})
+
 //Bus
 // Add a new bus
 AdminRouter.post("/api/add/bus", async (req, res) => {
