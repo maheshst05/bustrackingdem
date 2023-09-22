@@ -33,6 +33,7 @@ userRouter.post("/api/auth/register", async (req, res) => {
       dob,
       age,
       profileType,
+      licenceNo,
       password: hashedPassword,
     });
 
