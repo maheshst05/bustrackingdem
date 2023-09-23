@@ -22,22 +22,35 @@ AdminRouter.get("/api/get/drivers", async (req, res) => {
 });
 
 //update driver
-AdminRouter.put('/api/update/driver/:id',async(req,res)=>{
+const bcrypt = require('bcrypt');
+
+AdminRouter.put('/api/update/driver/:id', async (req, res) => {
   const id = req.params.id;
   try {
-    const driver = await User.findByIdAndUpdate({_id:id},
-      req.body
-    )
-    return res
-      .status(200)
-      .json({ message: "Driver Updated successfully"});
+    // Check if the request body contains a password field
+    if (req.body.password) {
+      // Hash the new password
+      req.body.password = await bcrypt.hash(req.body.password, 10);
+    }
 
+    // Update the user document
+    const driver = await User.findByIdAndUpdate(
+      { _id: id },
+      req.body,
+      { new: true } // This option returns the updated document
+    );
+
+    if (!driver) {
+      return res.status(404).json({ message: "Driver not found" });
+    }
+
+    return res.status(200).json({ message: "Driver Updated successfully" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
-  
   }
-})
+});
+
 //delete driver
 AdminRouter.delete('/api/delete/driver/:id',async(req,res)=>{
   const id = req.params.id;
@@ -209,22 +222,5 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
   }
 });
 
-//getbus by its name
-// AdminRouter.get("/api/get/res", async (req, res) => {
-//   const search = req.query.search; 
-//   try {
-//     const bus = await BusRoute.find({
-//       "bus_details.busName": { $regex: `${search}`, $options: "i" },
-//     });
-
-//     if (bus.length === 0) {
-//       res.status(404).send("Bus not found");
-//     } else {
-//       res.send(bus);
-//     }
-//   } catch (error) {
-//     res.status(500).send(error.message);
-//   }
-// });
 
 module.exports = AdminRouter;

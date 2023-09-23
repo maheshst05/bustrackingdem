@@ -39,6 +39,8 @@ liveRouter.put("/api/update/bus/:id", async (req, res) => {
   }
 });
 
+
+//get single bus
 liveRouter.get("/api/live-location/bus/:id", async (req, res) => {
   const id = req.params.id;
 

@@ -164,7 +164,7 @@ userRouter.post(
   }
 );
 
-//demo
+//get all buses
 userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
   const { search } = req.query;
   try {
@@ -217,63 +217,87 @@ userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
   }
 });
 
-//get live bus
+//get live buses
+
 // userRouter.get(
 //   "/api/get/buses/live/:token?/:id",
-
 //   async (req, res) => {
 //     const id = req.params.id;
 //     try {
-//       const bus = await BusRoute.find({ _id: { $ne: req.params.id } }).select(
-//         ["_id", "busName", "currentRouteLocation",]
-//       );
- 
-   
-//       // console.log(bus)
-//       return res.status(200).json(bus);
- 
- 
+//       const bus = await BusRoute.findById(id).select([
+//         "currentRouteLocation",
+//         "_id",
+//         "status",
+//         "route_details"
+//       ]);
+
+//       if (!bus) {
+//         return res.status(404).json({ message: "Bus not found" });
+//       }
+
+//       if (bus.status === "STOP") {
+//         return res.status(200).json([
+//           {
+//             currentRouteLocation: bus.route_details.sourceRoute,
+//             _id: bus._id
+//           }
+//         ]);
+      
+    
+//     }
+      
+//       return res.status(200).json([{"currentRouteLocation":bus.currentRouteLocation,id:bus._id}]);
+      
 //     } catch (error) {
 //       console.log(error.message);
+//       return res.status(500).json({ message: "Internal Server Error" });
 //     }
 //   }
 // );
 
-userRouter.get(
-  "/api/get/buses/live/:token?/:id",
-  async (req, res) => {
-    const id = req.params.id;
-    try {
-      const bus = await BusRoute.findById(id).select([
-        "currentRouteLocation",
-        "_id",
-        "status",
-        "route_details"
-      ]);
+//get live buses all excluded one
+userRouter.get('/api/get/buses/live/:token?/:id',authentication, async (req, res) => {
+  try {
+    const excludedBusId = req.params.id; // Get the excluded bus ID from the params
 
-      if (!bus) {
-        return res.status(404).json({ message: "Bus not found" });
+    // Find all buses
+    const buses = await BusRoute.find({ '_id': { $ne: excludedBusId } });
+
+    if (!buses || buses.length === 0) {
+      return res.status(404).json({ message: 'Buses not found' });
+    }
+
+    // Create an array to store the results
+    const simplifiedBuses = [];
+
+    // Loop through all buses and process each one
+    for (const bus of buses) {
+      let currentRouteLocation;
+
+      // Check the status of the bus
+      if (bus.status === "STOP") {
+        currentRouteLocation = bus.route_details.sourceRoute;
+      } else {
+        currentRouteLocation = bus.currentRouteLocation;
       }
 
-      if (bus.status === "STOP") {
-        return res.status(200).json([
-          {
-            currentRouteLocation: bus.route_details.sourceRoute,
-            _id: bus._id
-          }
-        ]);
-      
-    
+      // Create a response object for the bus
+      const busResponse = {
+        _id: bus._id,
+        currentRouteLocation,
+        busName: bus.bus_details.busName,
+      };
+
+      simplifiedBuses.push(busResponse);
     }
-      
-      return res.status(200).json([{"currentRouteLocation":bus.currentRouteLocation,id:bus._id}]);
-      
-    } catch (error) {
-      console.log(error.message);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
+
+    res.status(200).json(simplifiedBuses);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
   }
-);
+});
+
 
 
 module.exports = userRouter;
