@@ -17,7 +17,7 @@ PrivateRouter.get("/api/getvehicle/:token", authentication, async (req, res) => 
 
     // Assuming you want to return data for all found vehicles
     const vehicleData = vehicles.map((vehicle) => ({
-      driverName: vehicle.name,
+      name: vehicle.name,
       email: vehicle.email,
       licenceNo:vehicle.licenceNo,
       phoneNo:vehicle.phoneNo,
