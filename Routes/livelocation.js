@@ -1,7 +1,6 @@
 const express = require("express");
 const liveRouter = express.Router();
 const BusRoute = require("../Model/busRoute");
-
 liveRouter.put("/api/update/bus/:id", async (req, res) => {
   const busId = req.params.id;
   const {
@@ -13,19 +12,20 @@ liveRouter.put("/api/update/bus/:id", async (req, res) => {
   } = req.body;
 
   try {
-    const updatedBus = await BusRoute.findByAndUpdate(
-      { _id: busId },
+    const updatedBus = await BusRoute.findByIdAndUpdate(
+      busId, // You don't need to wrap busId in an object
       {
         $set: {
           "route_details.sourceRoute": sourceRoute,
           "route_details.destinationRoute": destinationRoute,
           "bus_details.busName": busName,
           currentRouteLocation: currentRouteLocation,
-          heading,
+          heading: heading, // Ensure you provide the variable name
         },
       },
       { new: true }
     );
+
     if (updatedBus) {
       return res
         .status(200)
@@ -38,6 +38,7 @@ liveRouter.put("/api/update/bus/:id", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
+
 
 
 //get location bus by id
