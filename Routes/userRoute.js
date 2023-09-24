@@ -217,43 +217,6 @@ userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
   }
 });
 
-//get live buses
-
-// userRouter.get(
-//   "/api/get/buses/live/:token?/:id",
-//   async (req, res) => {
-//     const id = req.params.id;
-//     try {
-//       const bus = await BusRoute.findById(id).select([
-//         "currentRouteLocation",
-//         "_id",
-//         "status",
-//         "route_details"
-//       ]);
-
-//       if (!bus) {
-//         return res.status(404).json({ message: "Bus not found" });
-//       }
-
-//       if (bus.status === "STOP") {
-//         return res.status(200).json([
-//           {
-//             currentRouteLocation: bus.route_details.sourceRoute,
-//             _id: bus._id
-//           }
-//         ]);
-      
-    
-//     }
-      
-//       return res.status(200).json([{"currentRouteLocation":bus.currentRouteLocation,id:bus._id}]);
-      
-//     } catch (error) {
-//       console.log(error.message);
-//       return res.status(500).json({ message: "Internal Server Error" });
-//     }
-//   }
-// );
 
 //get live buses all excluded one
 userRouter.get('/api/get/buses/live/:token?/:id',authentication, async (req, res) => {

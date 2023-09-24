@@ -7,6 +7,7 @@ const liveRouter = require("./Routes/livelocation");
 const driverRouter = require("./Routes/deiverRoute");
 const userRouter = require('./Routes/userRoute');
 const AdminRouter = require("./Routes/adminRouter");
+const PrivateRouter = require("./Routes/PrivateRoute");
 app.use(express.json());
 app.use(cors());
 
@@ -20,7 +21,7 @@ app.use("/driver", driverRouter);
 app.use("/user", userRouter);
 app.use("/live", liveRouter);
 app.use("/",AdminRouter)
-
+app.use("/",PrivateRouter)
 
 // Start the server
 app.listen(process.env.PORT, async () => {

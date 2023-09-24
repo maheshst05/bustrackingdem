@@ -13,7 +13,7 @@ liveRouter.put("/api/update/bus/:id", async (req, res) => {
   } = req.body;
 
   try {
-    const updatedBus = await BusRoute.findOneAndUpdate(
+    const updatedBus = await BusRoute.findByAndUpdate(
       { _id: busId },
       {
         $set: {
@@ -46,9 +46,11 @@ liveRouter.get("/api/live-location/bus/:id", async (req, res) => {
 
   try {
     
-    const liveLocation = await BusRoute.findById(id);
+    // const liveLocation = await BusRoute.findById(id);
 
-    if (!liveLocation) {
+const liveLocation = await BusRoute.find()
+
+if (!liveLocation) {
       return res.status(404).json({ msg: "Bus not found" });
     }
 
