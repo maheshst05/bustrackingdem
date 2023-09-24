@@ -9,7 +9,7 @@ const jwt = require("jsonwebtoken");
 PrivateRouter.get("/api/getvehicle/:token", authentication, async (req, res) => {
   try {
     // Find all users with profileType "P_Vehicle"
-    const vehicles = await User.find({ profileType: "P_Vehicle" });
+    const vehicles = await User.find({ profileType: "Private" });
 
     if (!vehicles || vehicles.length === 0) {
       return res.status(404).json({ error: "No private vehicles found" });
