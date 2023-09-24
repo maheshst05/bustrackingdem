@@ -6,42 +6,45 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 //get all PrivateVehicles
-PrivateRouter.get("/api/getvehicle/:token", authentication, async (req, res) => {
-  try {
-    // Find all users with profileType "P_Vehicle"
-    const vehicles = await User.find({ profileType: "Private" });
+PrivateRouter.get(
+  "/api/getvehicle/:token",
+  authentication,
+  async (req, res) => {
+    try {
+      // Find all users with profileType "P_Vehicle"
+      const vehicles = await User.find({ profileType: "Private" });
 
-    if (!vehicles || vehicles.length === 0) {
-      return res.status(404).json({ error: "No private vehicles found" });
+      if (!vehicles || vehicles.length === 0) {
+        return res.status(404).json({ error: "No private vehicles found" });
+      }
+
+      // Assuming you want to return data for all found vehicles
+      const vehicleData = vehicles.map((vehicle) => ({
+        id: vehicle.id,
+        name: vehicle.name,
+        email: vehicle.email,
+        licenceNo: vehicle.licenceNo,
+        phoneNo: vehicle.phoneNo,
+        dob: vehicle.dob,
+        profileType: vehicle.profileType,
+        vehicleNo: vehicle.privateVehicle.vehicleNo,
+        status: vehicle.privateVehicle.status,
+        vehicletype: vehicle.privateVehicle.vehicletype,
+        currentLocation: vehicle.privateVehicle.currentLocation,
+      }));
+
+      return res.status(200).json(vehicleData);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ msg: "Internal server error" });
     }
-
-    // Assuming you want to return data for all found vehicles
-    const vehicleData = vehicles.map((vehicle) => ({
-      id:vehicle.id,
-      name: vehicle.name,
-      email: vehicle.email,
-      licenceNo:vehicle.licenceNo,
-      phoneNo:vehicle.phoneNo,
-      dob:vehicle.dob,
-      profileType: vehicle.profileType,
-      vehicleNo: vehicle.privateVehicle.vehicleNo,
-      status: vehicle.privateVehicle.status,
-      vehicletype: vehicle.privateVehicle.vehicletype,
-      currentLocation: vehicle.privateVehicle.currentLocation
-    }));
-
-    return res.status(200).json(vehicleData);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ msg: "Internal server error" });
   }
-});
+);
 
 //post private vehicle
 PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
   try {
     const {
-  
       name,
       dob,
       phoneNo,
@@ -71,7 +74,7 @@ PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
     // Save the user to the database
     await newUser.save();
 
-    res.status(201).json({ message: "User registered successfully" },);
+    res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
     // Handle registration errors
     console.error(error);
@@ -80,110 +83,97 @@ PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
 });
 // const bcrypt = require('bcrypt'); // Import the bcrypt library
 
-PrivateRouter.put("/api/updatevehicle/:token/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const {
-      vehicleNo,
-      vehicletype,
-      status,
-      name,
-      dob,
-      email,
-      phoneNo,
-      password,
-      licenceNo,
-      profileType,
-    } = req.body;
-    const user = await User.findOne({ _id: id, profileType: "Private" });
+PrivateRouter.put(
+  "/api/updatevehicle/:token/:id",
+  authentication,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const {
+        vehicleNo,
+        vehicletype,
+        status,
+        name,
+        dob,
+        email,
+        phoneNo,
+        password,
+        licenceNo,
+        profileType,
+      } = req.body;
+      const user = await User.findByIdAndUpdate({ _id: id},req.body);
 
-    if (!user) {
-      return res.status(404).json({ error: "Private vehicle not found" });
+      if (!user) {
+        return res.status(404).json({ error: "Private vehicle not found" });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Private vehicle updated successfully" });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal server error" });
     }
-
-    // Update the private vehicle's information
-    user.name = name;
-    user.dob = dob;
-    user.email = email;
-    user.phoneNo = phoneNo;
-
-    // Hash the password before saving it
-    if (password) {
-      const hashedPassword = await bcrypt.hash(password, 10); // 10 is the saltRounds
-      user.password = hashedPassword;
-    }
-
-    user.licenceNo = licenceNo;
-    user.profileType = profileType;
-    user.privateVehicle.vehicleNo = vehicleNo;
-    user.privateVehicle.vehicletype = vehicletype;
-    user.privateVehicle.status = status;
-
-    // Save the updated user to the database
-    await user.save();
-
-    return res
-      .status(200)
-      .json({ message: "Private vehicle updated successfully" });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal server error" });
   }
-});
-
-
-
-
-
-
+);
 
 //delete vehicle
-PrivateRouter.delete("/api/deletevehicle/:token/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
+PrivateRouter.delete(
+  "/api/deletevehicle/:token/:id",
+  authentication,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
 
-    // Find the user with the given ID and ensure it has the profileType "P_Vehicle"
-    const user = await User.findByIdAndDelete({
-      _id: id,
-      profileType: "Private",
-    });
+      // Find the user with the given ID and ensure it has the profileType "P_Vehicle"
+      const user = await User.findByIdAndDelete({
+        _id: id,
+        profileType: "Private",
+      });
 
-    if (!user) {
-      return res.status(404).json({ error: "Private vehicle not found" });
+      if (!user) {
+        return res.status(404).json({ error: "Private vehicle not found" });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Private vehicle deleted successfully" });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal server error" });
     }
-
-    return res
-      .status(200)
-      .json({ message: "Private vehicle deleted successfully" });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal server error" });
   }
-});
-
-
-
-
-
-
+);
 
 //get a privatevehicle Live Location
 PrivateRouter.get("/get/live/location/:token/:id", async (req, res) => {
   try {
     const vehicle = await User.findById(req.params.id);
-    return res
-      .status(200)
-      .send({
-        driverName: vehicle.name,
-        vehicleNo: vehicle.privateVehicle.vehicleNo,
-        status: vehicle.privateVehicle.status,
-        vehicletype: vehicle.privateVehicle.vehicletype,
-        currentLocation: vehicle.privateVehicle.currentLocation
-      });
+    return res.status(200).send({
+      driverName: vehicle.name,
+      vehicleNo: vehicle.privateVehicle.vehicleNo,
+      status: vehicle.privateVehicle.status,
+      vehicletype: vehicle.privateVehicle.vehicletype,
+      currentLocation: vehicle.privateVehicle.currentLocation,
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
 
+// PrivateRouter.put(
+//   "/api/update/live/location/:token",
+//   authentication,
+//   async (req, res) => {
+//     try {
+
+//     } catch (error) {
+//       console.error(error);
+//       return res.status(500).json({ msg: "Internal server error" });
+//     }
+//   }
+// );
+
+// status, v_no, currentLocation,
 module.exports = PrivateRouter;
