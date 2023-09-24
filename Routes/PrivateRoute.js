@@ -78,8 +78,8 @@ PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
     res.status(500).json({ error: "Registration failed" });
   }
 });
+// const bcrypt = require('bcrypt'); // Import the bcrypt library
 
-//update vehicle information
 PrivateRouter.put("/api/updatevehicle/:token/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -87,7 +87,13 @@ PrivateRouter.put("/api/updatevehicle/:token/:id", async (req, res) => {
       vehicleNo,
       vehicletype,
       status,
-      currentLocation: { latitude, longitude, latitudeDelta, longitudeDelta },
+      name,
+      dob,
+      email,
+      phoneNo,
+      password,
+      licenceNo,
+      profileType,
     } = req.body;
     const user = await User.findOne({ _id: id, profileType: "Private" });
 
@@ -96,13 +102,22 @@ PrivateRouter.put("/api/updatevehicle/:token/:id", async (req, res) => {
     }
 
     // Update the private vehicle's information
+    user.name = name;
+    user.dob = dob;
+    user.email = email;
+    user.phoneNo = phoneNo;
+
+    // Hash the password before saving it
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10); // 10 is the saltRounds
+      user.password = hashedPassword;
+    }
+
+    user.licenceNo = licenceNo;
+    user.profileType = profileType;
     user.privateVehicle.vehicleNo = vehicleNo;
     user.privateVehicle.vehicletype = vehicletype;
     user.privateVehicle.status = status;
-    user.privateVehicle.currentLocation.latitude = latitude;
-    user.privateVehicle.currentLocation.longitude = longitude;
-    user.privateVehicle.currentLocation.latitudeDelta = latitudeDelta;
-    user.privateVehicle.currentLocation.longitudeDelta = longitudeDelta;
 
     // Save the updated user to the database
     await user.save();
@@ -115,6 +130,12 @@ PrivateRouter.put("/api/updatevehicle/:token/:id", async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
+
+
+
+
 
 //delete vehicle
 PrivateRouter.delete("/api/deletevehicle/:token/:id", async (req, res) => {
@@ -139,6 +160,12 @@ PrivateRouter.delete("/api/deletevehicle/:token/:id", async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
+
+
+
+
 
 //get a privatevehicle Live Location
 PrivateRouter.get("/get/live/location/:token/:id", async (req, res) => {
