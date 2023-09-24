@@ -101,7 +101,7 @@ PrivateRouter.put(
         licenceNo,
         profileType,
       } = req.body;
-      const user = await User.findByIdAndUpdate({ _id: id},req.body);
+      const user = await User.findByIdAndUpdate({ _id: id }, req.body);
 
       if (!user) {
         return res.status(404).json({ error: "Private vehicle not found" });
@@ -162,18 +162,37 @@ PrivateRouter.get("/get/live/location/:token/:id", async (req, res) => {
   }
 });
 
-// PrivateRouter.put(
-//   "/api/update/live/location/:token",
-//   authentication,
-//   async (req, res) => {
-//     try {
+PrivateRouter.put(
+  "/api/update/live/location/:token/:id",
+  authentication,
+  async (req, res) => {
+    const { status, currentLocation, vehicleNo } = req.body;
+    const { id } = req.params; 
 
-//     } catch (error) {
-//       console.error(error);
-//       return res.status(500).json({ msg: "Internal server error" });
-//     }
-//   }
-// );
+    try {
+     
+      const vehicle = await User.findById(id);
+
+      if (!vehicle) {
+        return res.status(404).json({ msg: "Vehicle not found" });
+      }
+
+      // Update the vehicle's live location and status
+      vehicle.privateVehicle.status = status;
+      vehicle.privateVehicle.currentLocation = currentLocation;
+      vehicle.privateVehicle.vehicleNo = vehicleNo;
+      // Save the updated vehicle information
+      await vehicle.save();
+
+      return res
+        .status(200)
+        .json({ msg: "Live location updated successfully" });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ msg: "Internal server error" });
+    }
+  }
+);
 
 // status, v_no, currentLocation,
 module.exports = PrivateRouter;
