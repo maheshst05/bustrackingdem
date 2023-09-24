@@ -46,9 +46,9 @@ liveRouter.get("/api/live-location/bus/:id", async (req, res) => {
 
   try {
     
-    // const liveLocation = await BusRoute.findById(id);
+     const liveLocation = await BusRoute.findById(id);
 
-const liveLocation = await BusRoute.find()
+//const liveLocation = await BusRoute.find()
 
 if (!liveLocation) {
       return res.status(404).json({ msg: "Bus not found" });
