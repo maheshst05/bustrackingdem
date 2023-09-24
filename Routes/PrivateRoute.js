@@ -124,7 +124,7 @@ PrivateRouter.delete("/api/deletevehicle/:token/:id", async (req, res) => {
     // Find the user with the given ID and ensure it has the profileType "P_Vehicle"
     const user = await User.findByIdAndDelete({
       _id: id,
-      profileType: "P_Vehicle",
+      profileType: "Private",
     });
 
     if (!user) {
