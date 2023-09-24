@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const PrivateVehicleSchema = new mongoose.Schema({
     V_No:String,
       V_DriverName:String,
@@ -11,6 +12,7 @@ const PrivateVehicleSchema = new mongoose.Schema({
         longitudeDelta: Number,
       }
   })
+
   const PrivateVehicle = mongoose.model('Vehicle', PrivateVehicleSchema);
   module.exports = PrivateVehicle;
   
