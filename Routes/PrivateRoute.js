@@ -17,6 +17,7 @@ PrivateRouter.get("/api/getvehicle/:token", authentication, async (req, res) => 
 
     // Assuming you want to return data for all found vehicles
     const vehicleData = vehicles.map((vehicle) => ({
+      id:vehicle.id,
       name: vehicle.name,
       email: vehicle.email,
       licenceNo:vehicle.licenceNo,
@@ -40,6 +41,7 @@ PrivateRouter.get("/api/getvehicle/:token", authentication, async (req, res) => 
 PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
   try {
     const {
+  
       name,
       dob,
       phoneNo,
@@ -87,7 +89,7 @@ PrivateRouter.put("/api/updatevehicle/:token/:id", async (req, res) => {
       status,
       currentLocation: { latitude, longitude, latitudeDelta, longitudeDelta },
     } = req.body;
-    const user = await User.findOne({ _id: id, profileType: "P_Vehicle" });
+    const user = await User.findOne({ _id: id, profileType: "Private" });
 
     if (!user) {
       return res.status(404).json({ error: "Private vehicle not found" });
