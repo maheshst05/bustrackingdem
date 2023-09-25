@@ -69,27 +69,27 @@ driverRouter.put(
       req.body;
     try {
       // Check if any bus assigned to the driver has a status of "START".
-      const buses = await BusRoute.find({ "driver_details._id": id });
+      // const buses = await BusRoute.find({ "driver_details._id": id });
 
-      if (!buses || buses.length === 0) {
-        return res
-          .status(404)
-          .json({ error: "No assigned buses found for this driver" });
-      }
+      // if (!buses || buses.length === 0) {
+      //   return res
+      //     .status(404)
+      //     .json({ error: "No assigned buses found for this driver" });
+      // }
 
-      const hasStartStatus = buses.some((bus) => bus.status === "START");
+      // const hasStartStatus = buses.some((bus) => bus.status === "START");
 
-      if (hasStartStatus) {
-        return res
-          .status(400)
-          .json({
-            error: "One bus is currently in the START status, and you shouldn't start this bus.",
-          });
-      } else {
+      // if (hasStartStatus) {
+      //   return res
+      //     .status(400)
+      //     .json({
+      //       error: "One bus is currently in the START status, and you shouldn't start this bus.",
+      //     });
+      // } else {
         const updateFields = {};
         if (status) {
           updateFields.status = status;
-        }
+       // }
 
         if (busName) {
           updateFields["bus_details.busName"] = busName;
