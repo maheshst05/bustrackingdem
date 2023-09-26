@@ -237,7 +237,7 @@ PrivateRouter.get(
           currentLocation: v.privateVehicle.currentLocation,
         };
 
-        return res.status(200).json(vehicleData);
+        return res.status(200).json([vehicleData]);
       }
 
       const vehicles = await User.find({ profileType: "Private" });
