@@ -70,6 +70,7 @@ driverRouter.put(
     try {
       // Check if any bus assigned to the driver has a status of "START".
       // const buses = await BusRoute.find({ "driver_details._id": id });
+      // const buses = await BusRoute.find({ "driver_details._id": { id } });
 
       // if (!buses || buses.length === 0) {
       //   return res
@@ -89,7 +90,7 @@ driverRouter.put(
         const updateFields = {};
         if (status) {
           updateFields.status = status;
-       // }
+      //  }
 
         if (busName) {
           updateFields["bus_details.busName"] = busName;

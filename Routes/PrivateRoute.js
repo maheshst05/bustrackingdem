@@ -167,10 +167,9 @@ PrivateRouter.put(
   authentication,
   async (req, res) => {
     const { status, currentLocation, vehicleNo } = req.body;
-    const { id } = req.params; 
+    const { id } = req.params;
 
     try {
-     
       const vehicle = await User.findById(id);
 
       if (!vehicle) {
@@ -194,5 +193,14 @@ PrivateRouter.put(
   }
 );
 
-// status, v_no, currentLocation,
+PrivateRouter.get("/api/live_vehicles/:token",authentication, async (req, res) => {
+  try {
+    const live_vehicles = await User.find({ "privateVehicle.status": "START" });
+ res.status(200).json(live_vehicles);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+});
+
 module.exports = PrivateRouter;
