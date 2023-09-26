@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
     },
     privateVehicle: {
       vehicleNo: String,
-      status: String,
+      status:{type: String, default:'STOP'},
       vehicletype: String,
       currentLocation: {
         latitude: Number,
