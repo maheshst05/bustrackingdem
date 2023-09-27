@@ -224,7 +224,7 @@ userRouter.get('/api/get/buses/live/:token?/:id',authentication, async (req, res
     const excludedBusId = req.params.id; 
 
     // Find all buses
-    const buses = await BusRoute.find({ '_id': { $ne: excludedBusId } });
+    const buses = await BusRoute.find({ '_id': { $ne: excludedBusId },status: 'START'  });
 
     if (!buses || buses.length === 0) {
       return res.status(404).json({ message: 'Buses not found' });
@@ -260,6 +260,52 @@ userRouter.get('/api/get/buses/live/:token?/:id',authentication, async (req, res
     res.status(500).json({ message: 'Server Error' });
   }
 });
+
+
+// userRouter.get('/api/get/buses/live/:id', async (req, res) => {
+//   try {
+//     const excludedBusId = req.params.id; 
+
+//     // Find all buses
+//     const buses = await BusRoute.find({ '_id': { $ne: excludedBusId },status: 'START'  });
+
+//     if (!buses || buses.length === 0) {
+//       return res.status(404).json({ message: 'Buses not found' });
+//     }
+
+//     // Create an array to store the results
+//     const simplifiedBuses = [];
+
+//     // Loop through all buses and process each one
+//     for (const bus of buses) {
+//       let currentRouteLocation;
+
+//       // Check the status of the bus
+//       if (bus.status === "STOP") {
+//         currentRouteLocation = bus.route_details.sourceRoute;
+//       } else {
+//         currentRouteLocation = bus.currentRouteLocation;
+//       }
+
+//       // Create a response object for the bus
+//       const busResponse = {
+//         _id: bus._id,
+//         currentRouteLocation,
+//         busName: bus.bus_details.busName,
+//       };
+
+//       simplifiedBuses.push(busResponse);
+//     }
+
+//     res.status(200).json(simplifiedBuses);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Server Error' });
+//   }
+// });
+
+
+
 
 
 module.exports = userRouter;
