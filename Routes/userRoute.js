@@ -218,10 +218,10 @@ userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
 });
 
 
-//get live buses all excluded one
+//get live buses all excluded one user 
 userRouter.get('/api/get/buses/live/:token?/:id',authentication, async (req, res) => {
   try {
-    const excludedBusId = req.params.id; // Get the excluded bus ID from the params
+    const excludedBusId = req.params.id; 
 
     // Find all buses
     const buses = await BusRoute.find({ '_id': { $ne: excludedBusId } });

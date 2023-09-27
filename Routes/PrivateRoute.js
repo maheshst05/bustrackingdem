@@ -5,42 +5,7 @@ const authentication = require("../Middleware/authentication");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-//get all PrivateVehicles
-// PrivateRouter.get(
-//   "/api/getvehicle/:token",
-//   authentication,
-//   async (req, res) => {
-//     try {
-//       const id = req.id;
 
-//       const vehicles = await User.find({ profileType: "Private" });
-
-//       if (!vehicles || vehicles.length === 0) {
-//         return res.status(404).json({ error: "No private vehicles found" });
-//       }
-
-//       // Assuming you want to return data for all found vehicles
-//       const vehicleData = vehicles.map((vehicle) => ({
-//         id: vehicle.id,
-//         name: vehicle.name,
-//         email: vehicle.email,
-//         licenceNo: vehicle.licenceNo,
-//         phoneNo: vehicle.phoneNo,
-//         dob: vehicle.dob,
-//         profileType: vehicle.profileType,
-//         vehicleNo: vehicle.privateVehicle.vehicleNo,
-//         status: vehicle.privateVehicle.status,
-//         vehicletype: vehicle.privateVehicle.vehicletype,
-//         currentLocation: vehicle.privateVehicle.currentLocation,
-//       }));
-
-//       return res.status(200).json(vehicleData);
-//     } catch (error) {
-//       console.error(error);
-//       return res.status(500).json({ msg: "Internal server error" });
-//     }
-//   }
-// );
 
 //get all private vehicles
 
@@ -261,11 +226,11 @@ PrivateRouter.get(
   }
 );
 
-//currentLocation vtype vno
+
 //update current Location by private vehicle driver
-PrivateRouter.put("/api/update/location/:token/:id",authentication, async (req, res) => {
+PrivateRouter.put("/api/update/location/:token/:id", async (req, res) => {
   const id = req.params.id;
-  const { vehicletype, currentLocation, vehicleNo } = req.body;
+  const { vehicletype, currentLocation, vehicleNo, status} = req.body;
 
   try {
     
@@ -275,6 +240,7 @@ PrivateRouter.put("/api/update/location/:token/:id",authentication, async (req, 
         "privateVehicle.vehicletype": vehicletype,
         "privateVehicle.currentLocation": currentLocation,
         "privateVehicle.vehicleNo": vehicleNo,
+        "privateVehicle.status":status
       },
       { new: true } 
     );
