@@ -267,7 +267,7 @@ userRouter.get('/api/get/buses/live/:token?/:id',authentication, async (req, res
     const excludedBusId = req.params.id; 
 
     // Find all buses
-    const buses = await BusRoute.find({ '_id': { $ne: excludedBusId }  });
+    const buses = await BusRoute.find({ '_id': { $ne: excludedBusId },status: 'START'  });
 
     if (!buses || buses.length === 0) {
       return res.status(404).json({ message: 'Buses not found' });
