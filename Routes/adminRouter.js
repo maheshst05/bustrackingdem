@@ -269,4 +269,25 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+
+
+
+
+
+//search source and destination
+
+AdminRouter.get("/api/search/source/destination", async () => {
+  try {
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+});
+
 module.exports = AdminRouter;

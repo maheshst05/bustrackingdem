@@ -26,6 +26,7 @@ const routeSchema = new mongoose.Schema({
     {
       latitude: Number,
       longitude: Number,
+      name:String
     },
   ],
 });
