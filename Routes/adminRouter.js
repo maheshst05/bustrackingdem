@@ -22,9 +22,9 @@ AdminRouter.get("/api/get/drivers", async (req, res) => {
 });
 
 //update driver
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
-AdminRouter.put('/api/update/driver/:id', async (req, res) => {
+AdminRouter.put("/api/update/driver/:id", async (req, res) => {
   const id = req.params.id;
   try {
     // Check if the request body contains a password field
@@ -52,20 +52,16 @@ AdminRouter.put('/api/update/driver/:id', async (req, res) => {
 });
 
 //delete driver
-AdminRouter.delete('/api/delete/driver/:id',async(req,res)=>{
+AdminRouter.delete("/api/delete/driver/:id", async (req, res) => {
   const id = req.params.id;
   try {
-    const driver = await User.findByIdAndDelete({_id:id})
-    return res
-      .status(200)
-      .json({ message: "Driver deleted successfully"});
-
+    const driver = await User.findByIdAndDelete({ _id: id });
+    return res.status(200).json({ message: "Driver deleted successfully" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
-  
   }
-})
+});
 
 //Bus
 // Add a new bus
@@ -97,16 +93,44 @@ AdminRouter.put("/api/update/bus/:id", async (req, res) => {
   }
 });
 //delete bus by id
+// AdminRouter.delete("/api/delete/bus/:id", async (req, res) => {
+//   const id = req.params.id;
+//   try {
+//     const deletedBus = await Bus.findByIdAndDelete({ _id: id });
+//     return res.status(200).json({ message: "Bus Deleted successfully" });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
+
 AdminRouter.delete("/api/delete/bus/:id", async (req, res) => {
   const id = req.params.id;
   try {
-    const deletedBus = await Bus.findByIdAndDelete({ _id: id });
+    const isAssigned = await BusRoute.exists({ "bus_details._id": id });
+
+    if (isAssigned) {
+      return res.status(400).json({
+        error: "You cannot delete this bus because it is currently assigned to a bus with a route.",
+      });
+    }
+
+    const deletedBus = await Bus.findByIdAndDelete(id);
+    
+    if (!deletedBus) {
+      return res.status(404).json({
+        error: "Bus not found.",
+      });
+    }
+
     return res.status(200).json({ message: "Bus Deleted successfully" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
+
+
 //get buses
 AdminRouter.get("/api/get/buses", async (req, res) => {
   try {
@@ -221,6 +245,5 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
-
 
 module.exports = AdminRouter;
