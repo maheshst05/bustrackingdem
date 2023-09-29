@@ -76,12 +76,12 @@ AdminRouter.delete("/api/delete/driver/:id", async (req, res) => {
 AdminRouter.post("/api/add/bus", async (req, res) => {
   const { busName } = req.body;
   try {
-    // const busNameCheck = await Bus.findOne({ busName });
-    // if (busNameCheck) {
-    //   return res
-    //     .status(400)
-    //     .json({ msg: "Route is already Presemt", status: false });
-    // }
+    const busNameCheck = await Bus.findOne({ busName });
+    if (busNameCheck) {
+      return res
+        .status(400)
+        .json({ msg: "Route is already Presemt", status: false });
+    }
 
     const newBus = new Bus(req.body);
     await newBus.save();
@@ -91,7 +91,7 @@ AdminRouter.post("/api/add/bus", async (req, res) => {
       .json({ message: "Bus added successfully", bus: newBus });
   } catch (error) {
     console.error(error);
-    return res.status(400).json( "Route is already Presemt" );
+    //return res.status(400).json( "Route is already Presemt" );
   }
 });
 
@@ -283,13 +283,23 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
 
 //search source and destination
 
-AdminRouter.get("/api/search/source/destination/:token?", async () => {
+AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
+  const { sourceRoute, destinationRoute } = req.query;
   try {
-
+    // Assuming BusRoute is a Mongoose model
+    const source = await BusRoute.find({
+      "route_details.polyline.name": { $regex: sourceRoute, $options: "i" }
+    });
+const desrination = await BusRoute.find({
+  "route_details.polyline.name": { $regex: sourceRoute, $options: "i" }
+});
+    res.send({"sourseRoute":source,"destination":desrination});
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
+
+
 
 module.exports = AdminRouter;
