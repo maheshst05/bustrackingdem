@@ -169,7 +169,7 @@ userRouter.post(
 
 
 
-userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
+userRouter.get("/api/get-bus/:token?", async (req, res) => {
   const { search } = req.query || {};
   const profiletype = req.ProfileType;
 console.log(profiletype)

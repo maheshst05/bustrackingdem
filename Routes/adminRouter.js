@@ -277,6 +277,18 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
     // Assuming BusRoute is a Mongoose model
     const source = await BusRoute.find({
       "route_details.polyline.name": { $regex: sourceRoute, $options: "i" },
+    }).select({
+      "bus_details.busName": 1,
+      "bus_details.busNo": 1,
+      "driver_details.name": 1,
+      "route_details.route": 1,
+      "route_details.sourceRoute": 1,
+      "route_details.destinationRoute": 1,
+      "route_details.stops": 1,
+      "route_details.polyline": 1,
+      time: 1,
+      status: 1,
+      currentRouteLocation: 1
     });
 
     const destination = await BusRoute.find({
@@ -284,6 +296,18 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
         $regex: destinationRoute,
         $options: "i",
       },
+    }).select({
+      "bus_details.busName": 1,
+      "bus_details.busNo": 1,
+      "driver_details.name": 1,
+      "route_details.route": 1,
+      "route_details.sourceRoute": 1,
+      "route_details.destinationRoute": 1,
+      "route_details.stops": 1,
+      "route_details.polyline": 1,
+      time: 1,
+      status: 1,
+      currentRouteLocation: 1
     });
 
     res.send({
