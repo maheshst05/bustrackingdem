@@ -76,12 +76,12 @@ AdminRouter.delete("/api/delete/driver/:id", async (req, res) => {
 AdminRouter.post("/api/add/bus", async (req, res) => {
   const { busName } = req.body;
   try {
-    const busNameCheck = await Bus.findOne({ busName });
-    if (busNameCheck) {
-      return res
-        .status(400)
-        .json({ msg: "Route is already Presemt", status: false });
-    }
+    // const busNameCheck = await Bus.findOne({ busName });
+    // if (busNameCheck) {
+    //   return res
+    //     .status(400)
+    //     .json({ msg: "Route is already Presemt", status: false });
+    // }
 
     const newBus = new Bus(req.body);
     await newBus.save();
@@ -91,9 +91,10 @@ AdminRouter.post("/api/add/bus", async (req, res) => {
       .json({ message: "Bus added successfully", bus: newBus });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ msg: "Internal server error" });
+    return res.status(400).json( "Route is already Presemt" );
   }
 });
+
 
 //update bus by id
 AdminRouter.put("/api/update/bus/:id", async (req, res) => {
@@ -282,8 +283,9 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
 
 //search source and destination
 
-AdminRouter.get("/api/search/source/destination", async () => {
+AdminRouter.get("/api/search/source/destination/:token?", async () => {
   try {
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });

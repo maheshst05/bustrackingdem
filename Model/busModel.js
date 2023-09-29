@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const busSchema = new mongoose.Schema({
-  busName:String,
+  busName:{type: 'string', unique:true},
 	busNo:String
 })
 const Bus = mongoose.model('Bus', busSchema);
