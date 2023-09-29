@@ -269,4 +269,51 @@ userRouter.get(
   }
 );
 
+// Get user's favorite bus
+userRouter.get('/api/get/fev/bus/:token', authentication, async (req, res) => {
+  try {
+    const user = await User.findById(req.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const getUserFev = await BusRoute.findOne({ _id: user.favoriteBus }).select({
+      "_id": 1,
+      "bus_details.busName": 1,
+      "bus_details.busNo": 1,
+      "driver_details.name": 1,
+      "route_details.route": 1,
+      "route_details.sourceRoute": 1,
+      "route_details.destinationRoute": 1,
+      "route_details.stops": 1,
+      "route_details.polyline": 1,
+      time: 1,
+      status: 1,
+      currentRouteLocation: 1
+    });
+
+    if (!getUserFev) {
+      return res.status(404).json({ message: "No favorite bus found" });
+    }
+
+    res.send([getUserFev]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+userRouter.put("/api/like/unlike/route/:token",authentication,async(req,res)=>{
+  
+  try {
+    const likeUnlike = await User.findByIdAndUpdate({_id:req.id},req.body)
+    return res.status(200).json({ message: "fevrate route updated" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  
+  }
+})
+
+
 module.exports = userRouter;
