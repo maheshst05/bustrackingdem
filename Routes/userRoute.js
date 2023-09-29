@@ -139,7 +139,7 @@ userRouter.post(
   "/api/auth/logout/:token?",
   authentication,
   async (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
     try {
       let token = req.params.token || null;
 
@@ -165,52 +165,219 @@ userRouter.post(
 );
 
 //get all buses
+
+// userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
+//   const { search } = req.query;
+//   try {
+
+//     const filter = search
+//       ? {
+//           $or: [
+//             { "bus_details.busName": { $regex: search, $options: "i" } },
+//             { "route_details.route": { $regex: search, $options: "i" } },
+//           ],
+//         }
+//       : {};
+
+//     const busRoutes = await BusRoute.find(filter, {
+//       _id: 1,
+//       bus_details: { busName: 1 },
+//       driver_details: { name: 1 },
+//       route_details: {
+//         route: 1,
+//         sourceRoute: 1,
+//         destinationRoute: 1,
+//         stops: 1,
+//         polyline: 1,
+//       },
+//       time: 1,
+//       status: 1,
+//       currentRouteLocation: 1,
+//     });
+
+//     // Check if any results were found
+//     if (busRoutes.length === 0) {
+//       return res.status(404).json({ error: "No results found" });
+//     }
+
+//     // Conditionally set currentRouteLocation based on the status field
+//     const modifiedBusRoutes = busRoutes.map((busRoute) => {
+//       if (busRoute.status === "STOP") {
+//         return {
+//           ...busRoute.toObject(),
+//           currentRouteLocation: busRoute.route_details.sourceRoute,
+//         };
+//       }
+//       return busRoute;
+//     });
+
+//     res.json(modifiedBusRoutes);
+//   } catch (error) {
+//     console.error("Error retrieving bus routes:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+//trow
+
+// userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
+//   const { search } = req.query || {};
+//   const profiletype = req.ProfileType;
+
+//   try {
+//     if (profiletype == "User") {
+//       if (!search) {
+//         return res.status(200).json([]);
+//       }
+
+//       const busRoutes = await BusRoute.find(
+//         {
+//           $or: [
+//             { "bus_details.busName": { $regex: search, $options: "i" } },
+//             { "route_details.route": { $regex: search, $options: "i" } },
+//           ],
+//         },
+//         {
+//           _id: 1,
+//           "bus_details.busName": 1,
+//           "driver_details.name": 1,
+//           "route_details.route": 1,
+//           "route_details.sourceRoute": 1,
+//           "route_details.destinationRoute": 1,
+//           "route_details.stops": 1,
+//           "route_details.polyline": 1,
+//           time: 1,
+//           status: 1,
+//           currentRouteLocation: 1,
+//         }
+//       );
+
+//       if (busRoutes.length === 0) {
+//         return res.status(404).json({ error: "No results found" });
+//       }
+
+//       const modifiedBusRoutes = busRoutes.map((busRoute) => {
+//         if (busRoute.status === "STOP") {
+//           return {
+//             ...busRoute.toObject(),
+//             currentRouteLocation: busRoute.route_details.sourceRoute,
+//           };
+//         }
+//         return busRoute;
+//       });
+
+//       res.json(modifiedBusRoutes);
+
+//       return;
+//     }
+
+//     // Handle the case when profiletype is not "User"
+//     const filter = search
+//       ? {
+//           $or: [
+//             { "bus_details.busName": { $regex: search, $options: "i" } },
+//             { "route_details.route": { $regex: search, $options: "i" } },
+//           ],
+//         }
+//       : {};
+
+//     const busRoutes = await BusRoute.find(filter, {
+//       _id: 1,
+//       bus_details: { busName: 1 },
+//       driver_details: { name: 1 },
+//       route_details: {
+//         route: 1,
+//         sourceRoute: 1,
+//         destinationRoute: 1,
+//         stops: 1,
+//         polyline: 1,
+//       },
+//       time: 1,
+//       status: 1,
+//       currentRouteLocation: 1,
+//     });
+
+//     // Check if any results were found
+//     if (busRoutes.length === 0) {
+//       return res.status(404).json({ error: "No results found" });
+//     }
+
+//     const modifiedBusRoutes = busRoutes.map((busRoute) => {
+//       if (busRoute.status === "STOP") {
+//         return {
+//           ...busRoute.toObject(),
+//           currentRouteLocation: busRoute.route_details.sourceRoute,
+//         };
+//       }
+//       return busRoute;
+//     });
+
+//     res.json(modifiedBusRoutes);
+//   } catch (error) {
+//     console.error("Error retrieving bus routes:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+
+
 userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
-  const { search } = req.query;
+  const { search } = req.query || {};
+  const profiletype = req.ProfileType;
+console.log(profiletype)
   try {
-    // Define the search filter based on the 'search' query parameter for busName and route
-    const filter = search
-      ? {
+    let filter = {};
+
+    if (profiletype == "User") {
+      if (!search) {
+        return res.status(200).json([]);
+      }
+
+      filter = {
+        $or: [
+          { "bus_details.busName": { $regex: search, $options: "i" } },
+          { "route_details.route": { $regex: search, $options: "i" } },
+        ],
+      };
+    } else {
+      if (search) {
+        filter = {
           $or: [
             { "bus_details.busName": { $regex: search, $options: "i" } },
             { "route_details.route": { $regex: search, $options: "i" } },
           ],
-        }
-      : {};
+        };
+      }
+    }
 
-    const busRoutes = await BusRoute.find(filter, {
+    const projection = {
       _id: 1,
-      bus_details: { busName: 1 },
-      driver_details: { name: 1 },
-      route_details: {
-        route: 1,
-        sourceRoute: 1,
-        destinationRoute: 1,
-        stops: 1,
-        polyline: 1,
-      },
+      "bus_details.busName": 1,
+      "bus_details.busNo": 1,
+      "driver_details.name": 1,
+      "route_details.route": 1,
+      "route_details.sourceRoute": 1,
+      "route_details.destinationRoute": 1,
+      "route_details.stops": 1,
+      "route_details.polyline": 1,
       time: 1,
       status: 1,
-      currentRouteLocation: 1,
-    });
+      currentRouteLocation: {
+        $cond: {
+          if: { $eq: ["$status", "STOP"] },
+          then: "$route_details.sourceRoute",
+          else: "$currentRouteLocation",
+        },
+      },
+    };
 
-    // Check if any results were found
+    const busRoutes = await BusRoute.find(filter, projection);
+
     if (busRoutes.length === 0) {
       return res.status(404).json({ error: "No results found" });
     }
 
-    // Conditionally set currentRouteLocation based on the status field
-    const modifiedBusRoutes = busRoutes.map((busRoute) => {
-      if (busRoute.status === "STOP") {
-        return {
-          ...busRoute.toObject(),
-          currentRouteLocation: busRoute.route_details.sourceRoute,
-        };
-      }
-      return busRoute;
-    });
-
-    res.json(modifiedBusRoutes);
+    res.json(busRoutes);
   } catch (error) {
     console.error("Error retrieving bus routes:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -218,91 +385,40 @@ userRouter.get("/api/get-bus/:token?", authentication, async (req, res) => {
 });
 
 
-//get live buses all excluded one user 
-// userRouter.get('/api/get/buses/live/:token?/:id',authentication, async (req, res) => {
-//   try {
-//     const excludedBusId = req.params.id; 
-
-//     // Find all buses
-//     const buses = await BusRoute.find({ '_id': { $ne: excludedBusId },status: 'START'  });
-
-//     if (!buses || buses.length === 0) {
-//       return res.status(404).json({ message: 'Buses not found' });
-//     }
-
-//     // Create an array to store the results
-//     const simplifiedBuses = [];
-
-//     // Loop through all buses and process each one
-//     for (const bus of buses) {
-//       let currentRouteLocation;
-
-//       // Check the status of the bus
-//       if (bus.status === "STOP") {
-//         currentRouteLocation = bus.route_details.sourceRoute;
-//       } else {
-//         currentRouteLocation = bus.currentRouteLocation;
-//       }
-
-//       // Create a response object for the bus
-//       const busResponse = {
-//         _id: bus._id,
-//         currentRouteLocation,
-//         busName: bus.bus_details.busName,
-//       };
-
-//       simplifiedBuses.push(busResponse);
-//     }
-
-//     res.status(200).json(simplifiedBuses);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Server Error' });
-//   }
-// });
 
 
-userRouter.get('/api/get/buses/live/:token?/:id',authentication, async (req, res) => {
-  try {
-    const excludedBusId = req.params.id; 
+userRouter.get(
+  "/api/get/buses/live/:token?/:id",
+  authentication,
+  async (req, res) => {
+    try {
+      const excludedBusId = req.params.id;
+      const buses = await BusRoute.find({
+        _id: { $ne: excludedBusId },
+        status: "START",
+      });
 
-    // Find all buses
-    const buses = await BusRoute.find({ '_id': { $ne: excludedBusId },status: 'START'  });
-
-    if (!buses || buses.length === 0) {
-      return res.status(404).json({ message: 'Buses not found' });
-    }
-
-    // Create an array to store the results
-    const simplifiedBuses = [];
-
-    // Loop through all buses and process each one
-    for (const bus of buses) {
-      let currentRouteLocation;
-
-      // Check the status of the bus
-      if (bus.status === "STOP") {
-        currentRouteLocation = bus.route_details.sourceRoute;
-      } else {
-        currentRouteLocation = bus.currentRouteLocation;
+      if (!buses || buses.length === 0) {
+        return res.status(404).json({ message: "Buses not found" });
       }
 
-      // Create a response object for the bus
-      const busResponse = {
-        _id: bus._id,
-        currentRouteLocation,
-        busName: bus.bus_details.busName,
-      };
+      const simplifiedBuses = [];
+      for (const bus of buses) {
+        const busResponse = {
+          _id: bus._id,
+          currentRouteLocation: bus.currentRouteLocation,
+          busName: bus.bus_details.busName,
+        };
 
-      simplifiedBuses.push(busResponse);
+        simplifiedBuses.push(busResponse);
+      }
+
+      res.status(200).json(simplifiedBuses);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server Error" });
     }
-
-    res.status(200).json(simplifiedBuses);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
   }
-});
-
+);
 
 module.exports = userRouter;

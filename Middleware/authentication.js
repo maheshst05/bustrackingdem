@@ -27,7 +27,7 @@ const authentication = async (req, res, next) => {
       }
 
       req.id = decode.userId;
-      //console.log(decode);
+      req.ProfileType = decode.user.profileType
       next();
     });
   } catch (error) {
