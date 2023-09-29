@@ -59,7 +59,8 @@ AdminRouter.delete("/api/delete/driver/:id", async (req, res) => {
 
     if (isAssigned) {
       return res.status(400).json({
-        error: "You cannot delete this Driver because it is currently assigned to a bus with a route.",
+        error:
+          "You cannot delete this Driver because it is currently assigned to a bus with a route.",
       });
     }
     const driver = await User.findByIdAndDelete({ _id: id });
@@ -73,7 +74,15 @@ AdminRouter.delete("/api/delete/driver/:id", async (req, res) => {
 //Bus
 // Add a new bus
 AdminRouter.post("/api/add/bus", async (req, res) => {
+  const { busName } = req.body;
   try {
+    const busNameCheck = await Bus.findOne({ busName });
+    if (busNameCheck) {
+      return res
+        .status(400)
+        .json({ msg: "Route is already Presemt", status: false });
+    }
+
     const newBus = new Bus(req.body);
     await newBus.save();
 
@@ -118,12 +127,13 @@ AdminRouter.delete("/api/delete/bus/:id", async (req, res) => {
 
     if (isAssigned) {
       return res.status(400).json({
-        error: "You cannot delete this bus because it is currently assigned to a bus with a route.",
+        error:
+          "You cannot delete this bus because it is currently assigned to a bus with a route.",
       });
     }
 
     const deletedBus = await Bus.findByIdAndDelete(id);
-    
+
     if (!deletedBus) {
       return res.status(404).json({
         error: "Bus not found.",
@@ -136,7 +146,6 @@ AdminRouter.delete("/api/delete/bus/:id", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
-
 
 //get buses
 AdminRouter.get("/api/get/buses", async (req, res) => {
