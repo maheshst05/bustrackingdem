@@ -182,13 +182,13 @@ AdminRouter.put("/api/update/route/:id", async (req, res) => {
 AdminRouter.delete("/api/delete/route/:id", async (req, res) => {
   const id = req.params.id;
   try {
-    const isAssigned = await BusRoute.exists({ "route_details._id": id });
+    // const isAssigned = await BusRoute.exists({ "route_details._id": id });
 
-    if (isAssigned) {
-      return res.status(400).json({
-        error: "You cannot delete this route because it is currently assigned to a bus with a route.",
-      });
-    }
+    // if (isAssigned) {
+    //   return res.status(400).json({
+    //     error: "You cannot delete this route because it is currently assigned to a bus with a route.",
+    //   });
+    // }
     const deletedRoute = await Route.findByIdAndDelete({ _id: id });
     return res.status(200).json({ message: " Route Deleted successfully" });
   } catch (error) {
