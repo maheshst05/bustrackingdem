@@ -95,7 +95,6 @@ AdminRouter.post("/api/add/bus", async (req, res) => {
   }
 });
 
-
 //update bus by id
 AdminRouter.put("/api/update/bus/:id", async (req, res) => {
   const id = req.params.id;
@@ -270,17 +269,6 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
 //search source and destination
 
 AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
@@ -288,18 +276,25 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
   try {
     // Assuming BusRoute is a Mongoose model
     const source = await BusRoute.find({
-      "route_details.polyline.name": { $regex: sourceRoute, $options: "i" }
+      "route_details.polyline.name": { $regex: sourceRoute, $options: "i" },
     });
-const desrination = await BusRoute.find({
-  "route_details.polyline.name": { $regex: sourceRoute, $options: "i" }
-});
-    res.send({"sourseRoute":source,"destination":desrination});
+
+    const destination = await BusRoute.find({
+      "route_details.polyline.name": {
+        $regex: destinationRoute,
+        $options: "i",
+      },
+    });
+
+    res.send({
+      msg: "Successfully found",
+      sourceRoute: source,
+      destinationRoute: destination,
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
-
-
 
 module.exports = AdminRouter;
