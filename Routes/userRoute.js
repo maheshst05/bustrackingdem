@@ -318,7 +318,7 @@ userRouter.put(
 );
 
 //search Route
-userRouter.get("/api/route/:token?",authentication, async (req, res) => {
+userRouter.get("/api/route/:token?", async (req, res) => {
   const { searchroute } = req.query;
 
   try {
@@ -348,5 +348,6 @@ userRouter.get("/api/route/:token?",authentication, async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
+
 
 module.exports = userRouter;
