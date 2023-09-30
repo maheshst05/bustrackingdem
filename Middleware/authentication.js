@@ -28,8 +28,8 @@ const authentication = async (req, res, next) => {
 
       req.id = decode.userId;
       req.ProfileType = decode.user.profileType;
-      req.fevorateBusId = decode.user.favoriteBus;
-      
+      req.favoriteBusId = decode.user.favoriteBus;
+
       next();
     });
   } catch (error) {

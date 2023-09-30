@@ -318,9 +318,13 @@ userRouter.put(
 );
 
 //search Route
-userRouter.get("/api/route/:token?", async (req, res) => {
+const { ObjectId } = require('mongoose').Types;
+
+userRouter.get("/api/route/:token?", authentication, async (req, res) => {
   const { searchroute } = req.query;
-  const fevorateBusId = req.fevorateBusId;
+  const favoriteBusId = req.favoriteBusId;
+  console.log(favoriteBusId);
+
   try {
     const regexPattern =
       typeof searchroute === "string" ? searchroute : String(searchroute);
@@ -344,14 +348,19 @@ userRouter.get("/api/route/:token?", async (req, res) => {
     if (!search) {
       return res.status(404).json({ message: "Route not found" });
     }
-    if (search._id === fevorateBusId) {
-     
+    
+    
+    
+    if (search._id.toString() === favoriteBusId) {
+      return res.status(200).json({ ...search.toObject(), isFavorite: true });
     }
-   // res.send(search);
+    return res.status(200).json({ ...search.toObject(), isFavorite: false });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
   }
 });
+
+
 
 module.exports = userRouter;
