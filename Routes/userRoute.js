@@ -292,7 +292,7 @@ userRouter.get("/api/get/fev/bus/:token", authentication, async (req, res) => {
       return res.status(404).json({ message: "No favorite bus found" });
     }
 
-    res.send([getUserFev]);
+    res.send(getUserFev);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
@@ -320,11 +320,14 @@ userRouter.put(
 //search Route
 userRouter.get("/api/route/:token?", async (req, res) => {
   const { searchroute } = req.query;
-
+  const fevorateBusId = req.fevorateBusId;
   try {
-    const regexPattern = typeof searchroute === 'string' ? searchroute : String(searchroute);
-    const search = await BusRoute.findOne({ "bus_details.busName": { $regex: regexPattern, $options: "i" } }).select({
-      "_id": 1,
+    const regexPattern =
+      typeof searchroute === "string" ? searchroute : String(searchroute);
+    const search = await BusRoute.findOne({
+      "bus_details.busName": { $regex: regexPattern, $options: "i" },
+    }).select({
+      _id: 1,
       "bus_details.busName": 1,
       "bus_details.busNo": 1,
       "driver_details.name": 1,
@@ -333,21 +336,22 @@ userRouter.get("/api/route/:token?", async (req, res) => {
       "route_details.destinationRoute": 1,
       "route_details.stops": 1,
       "route_details.polyline": 1,
-      "time": 1,
-      "status": 1,
-      "currentRouteLocation": 1
+      time: 1,
+      status: 1,
+      currentRouteLocation: 1,
     });
 
     if (!search) {
       return res.status(404).json({ message: "Route not found" });
     }
-
-    res.send(search);
+    if (search._id === fevorateBusId) {
+     
+    }
+   // res.send(search);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
   }
 });
-
 
 module.exports = userRouter;
