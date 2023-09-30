@@ -333,7 +333,7 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
 //   }
 // });
 
-
+//search source and destination
 AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
   const { sourceRoute, destinationRoute } = req.query;
   try {
@@ -386,6 +386,7 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
 });
 
 
-//put 
+
+
 
 module.exports = AdminRouter;

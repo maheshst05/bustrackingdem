@@ -23,7 +23,11 @@ const userSchema = new mongoose.Schema(
         longitudeDelta: Number,
       },
     },
-    favoriteBus:String
+    favoriteBus:{
+      id:String,
+      isFavorite:String,
+    },
+
   },
   { timestamps: true }
 );

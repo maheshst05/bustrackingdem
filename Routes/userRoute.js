@@ -151,7 +151,7 @@ userRouter.post(
 
       const blacklistedToken = new Logout({
         refreshToken: token,
-        userId: req.body.userId, 
+        userId: req.body.userId,
       });
 
       await blacklistedToken.save();
@@ -166,13 +166,10 @@ userRouter.post(
 
 //get all buses
 
-
-
-
 userRouter.get("/api/get-bus/:token?", async (req, res) => {
   const { search } = req.query || {};
   const profiletype = req.ProfileType;
-console.log(profiletype)
+  console.log(profiletype);
   try {
     let filter = {};
 
@@ -232,9 +229,6 @@ console.log(profiletype)
   }
 });
 
-
-
-
 userRouter.get(
   "/api/get/buses/live/:token?/:id",
   authentication,
@@ -270,27 +264,29 @@ userRouter.get(
 );
 
 // Get user's favorite bus
-userRouter.get('/api/get/fev/bus/:token', authentication, async (req, res) => {
+userRouter.get("/api/get/fev/bus/:token", authentication, async (req, res) => {
   try {
     const user = await User.findById(req.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const getUserFev = await BusRoute.findOne({ _id: user.favoriteBus }).select({
-      "_id": 1,
-      "bus_details.busName": 1,
-      "bus_details.busNo": 1,
-      "driver_details.name": 1,
-      "route_details.route": 1,
-      "route_details.sourceRoute": 1,
-      "route_details.destinationRoute": 1,
-      "route_details.stops": 1,
-      "route_details.polyline": 1,
-      time: 1,
-      status: 1,
-      currentRouteLocation: 1
-    });
+    const getUserFev = await BusRoute.findOne({ _id: user.favoriteBus }).select(
+      {
+        _id: 1,
+        "bus_details.busName": 1,
+        "bus_details.busNo": 1,
+        "driver_details.name": 1,
+        "route_details.route": 1,
+        "route_details.sourceRoute": 1,
+        "route_details.destinationRoute": 1,
+        "route_details.stops": 1,
+        "route_details.polyline": 1,
+        time: 1,
+        status: 1,
+        currentRouteLocation: 1,
+      }
+    );
 
     if (!getUserFev) {
       return res.status(404).json({ message: "No favorite bus found" });
@@ -303,17 +299,54 @@ userRouter.get('/api/get/fev/bus/:token', authentication, async (req, res) => {
   }
 });
 
-userRouter.put("/api/like/unlike/route/:token",authentication,async(req,res)=>{
-  
+//update fevorate
+userRouter.put(
+  "/api/like/unlike/route/:token",
+  authentication,
+  async (req, res) => {
+    try {
+      const likeUnlike = await User.findByIdAndUpdate(
+        { _id: req.id },
+        req.body
+      );
+      return res.status(200).json({ message: "fevrate route updated" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server Error" });
+    }
+  }
+);
+
+//search Route
+userRouter.get("/api/route/:token?",authentication, async (req, res) => {
+  const { searchroute } = req.query;
+
   try {
-    const likeUnlike = await User.findByIdAndUpdate({_id:req.id},req.body)
-    return res.status(200).json({ message: "fevrate route updated" });
+    const regexPattern = typeof searchroute === 'string' ? searchroute : String(searchroute);
+    const search = await BusRoute.findOne({ "bus_details.busName": { $regex: regexPattern, $options: "i" } }).select({
+      "_id": 1,
+      "bus_details.busName": 1,
+      "bus_details.busNo": 1,
+      "driver_details.name": 1,
+      "route_details.route": 1,
+      "route_details.sourceRoute": 1,
+      "route_details.destinationRoute": 1,
+      "route_details.stops": 1,
+      "route_details.polyline": 1,
+      "time": 1,
+      "status": 1,
+      "currentRouteLocation": 1
+    });
+
+    if (!search) {
+      return res.status(404).json({ message: "Route not found" });
+    }
+
+    res.send(search);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
-  
   }
-})
-
+});
 
 module.exports = userRouter;
