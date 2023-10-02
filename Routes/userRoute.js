@@ -292,12 +292,21 @@ userRouter.get("/api/get/fev/bus/:token", authentication, async (req, res) => {
       return res.status(404).json({ message: "No favorite bus found" });
     }
 
-    res.send(getUserFev);
+    // res.send(getUserFev);
+    res.send({...getUserFev.toObject(),isFevorite:true});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
   }
 });
+
+
+
+
+
+
+
+
 
 //update fevorate
 userRouter.put(
@@ -318,7 +327,7 @@ userRouter.put(
 );
 
 //search Route
-const { ObjectId } = require('mongoose').Types;
+const { ObjectId } = require("mongoose").Types;
 
 userRouter.get("/api/route/:token?", authentication, async (req, res) => {
   const { searchroute } = req.query;
@@ -348,9 +357,6 @@ userRouter.get("/api/route/:token?", authentication, async (req, res) => {
     if (!search) {
       return res.status(404).json({ message: "Route not found" });
     }
-    
-    
-    
     if (search._id.toString() === favoriteBusId) {
       return res.status(200).json({ ...search.toObject(), isFavorite: true });
     }
@@ -360,9 +366,5 @@ userRouter.get("/api/route/:token?", authentication, async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
-
-
-//hellooo
-
 
 module.exports = userRouter;
