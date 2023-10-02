@@ -269,123 +269,6 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
   }
 });
 
-//search source and destination
-// AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
-//   const { sourceRoute, destinationRoute } = req.query;
-//   try {
-//     // Assuming BusRoute is a Mongoose model
-//     const sourceQuery = {
-//       "route_details.polyline.name": { $regex: sourceRoute, $options: "i" },
-//     };
-
-//     const destinationQuery = {
-//       "route_details.polyline.name": { $regex: destinationRoute, $options: "i" },
-//     };
-
-//     const source = await BusRoute.find(sourceQuery).select({
-//       "bus_details.busName": 1,
-//       "bus_details.busNo": 1,
-//       "driver_details.name": 1,
-//       "route_details.route": 1,
-//       "route_details.sourceRoute": 1,
-//       "route_details.destinationRoute": 1,
-//       "route_details.stops": 1,
-//       "route_details.polyline": 1,
-//       time: 1,
-//       status: 1,
-//       currentRouteLocation: 1
-//     });
-
-//     const destination = await BusRoute.find(destinationQuery).select({
-//       "bus_details.busName": 1,
-//       "bus_details.busNo": 1,
-//       "driver_details.name": 1,
-//       "route_details.route": 1,
-//       "route_details.sourceRoute": 1,
-//       "route_details.destinationRoute": 1,
-//       "route_details.stops": 1,
-//       "route_details.polyline": 1,
-//       time: 1,
-//       status: 1,
-//       currentRouteLocation: 1
-//     });
-
-//     if (source.length === 0 && destination.length === 0) {
-//       // Neither source nor destination matched
-//       return res.send({ msg: "No result found" });
-//     } else if (source.length === 0) {
-//       // Source doesn't match, but destination matches
-//       return res.send({ msg: "Source does not match with your source input" });
-//     } else if (destination.length === 0) {
-//       // Destination doesn't match, but source matches
-//       return res.send({ msg: "Destination does not match with your destination input" });
-//     } else {
-//       // Both source and destination match
-//       return res.send({
-//         msg: "Successfully found",
-//         sourceRoute: source,
-//         destinationRoute: destination,
-//       });
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ msg: "Internal server error" });
-//   }
-// });
-
-//search source and destination
-// AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
-//   const { sourceRoute, destinationRoute } = req.query;
-//   try {
-    
-//     const commonProjection = {
-//       "_id":1,
-//       "bus_details.busName": 1,
-//       "bus_details.busNo": 1,
-//       "driver_details.name": 1,
-//       "route_details.route": 1,
-//       "route_details.sourceRoute": 1,
-//       "route_details.destinationRoute": 1,
-//       "route_details.stops": 1,
-//       "route_details.polyline": 1,
-//       time: 1,
-//       status: 1,
-//       currentRouteLocation: 1
-//     };
-
-//     const sourceQuery = {
-//       "route_details.polyline.name": { $regex: sourceRoute, $options: "i" },
-//     };
-
-//     const destinationQuery = {
-//       "route_details.polyline.name": { $regex: destinationRoute, $options: "i" },
-//     };
-
-//     const [source, destination] = await Promise.all([
-//       BusRoute.find(sourceQuery).select(commonProjection),
-//       BusRoute.find(destinationQuery).select(commonProjection)
-//     ]);
-
-//     if (source.length === 0 && destination.length === 0) {
-//       return res.send({ msg: "No result found" });
-//     } else if (source.length === 0) {
-//       return res.send({ msg: "Source does not match with your source input" });
-//     } else if (destination.length === 0) {
-//       return res.send({ msg: "Destination does not match with your destination input" });
-//     } else {
-//       return res.send({
-//         msg: "Successfully found",
-//         source,
-//         destination
-//       });
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ msg: "Internal server error" });
-//   }
-// });
-
-//two
 
 // AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
 //   const { sourceRoute, destinationRoute } = req.query;
@@ -421,8 +304,12 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
 
 //     if (source.length > 0 && destination.length > 0) {
 //       // Both source and destination match
+//       const mergedRoutes = source.concat(destination);
+//       const uniqueRoutes = Array.from(new Set(mergedRoutes.map(route => route.bus_details.busNo)))
+//         .map(busNo => mergedRoutes.find(route => route.bus_details.busNo === busNo));
+
 //       response.message = "Successfully found";
-//       response.routes = source.concat(destination);
+//       response.routes = uniqueRoutes;
 //     } else if (source.length > 0 && destination.length === 0) {
 //       // Source matches, but destination does not
 //       response.message = "Destination not match with your destination input";
@@ -446,8 +333,13 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
 
 AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
   const { sourceRoute, destinationRoute } = req.query;
+  
+
+  if (!sourceRoute || !destinationRoute) {
+    return res.status(400).json({ msg: "Both sourceRoute and destinationRoute are required" });
+  }
+
   try {
-    
     const commonProjection = {
       "_id":1,
       "bus_details.busName": 1,
@@ -477,7 +369,7 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
     const response = {};
 
     if (source.length > 0 && destination.length > 0) {
-      // Both source and destination match
+
       const mergedRoutes = source.concat(destination);
       const uniqueRoutes = Array.from(new Set(mergedRoutes.map(route => route.bus_details.busNo)))
         .map(busNo => mergedRoutes.find(route => route.bus_details.busNo === busNo));
@@ -485,26 +377,31 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
       response.message = "Successfully found";
       response.routes = uniqueRoutes;
     } else if (source.length > 0 && destination.length === 0) {
-      // Source matches, but destination does not
-      response.message = "Destination not match with your destination input";
+     
+      response.message = "Destination does not match with your destination input";
       response.routes = source;
     } else if (source.length === 0 && destination.length > 0) {
-      // Source does not match, but destination matches
-      response.message = "Source not match with your source input";
+     
+      response.message = "Source does not match with your source input";
       response.routes = destination;
     } else {
-      // Neither source nor destination match
+     
       response.message = "No result found";
       response.routes = [];
     }
 
-    res.send(response);
+    
+    if (response.routes.length > 0) {
+      res.send(response);
+    } else {
+    
+      res.status(404).json({ msg: "No results found" });
+    }
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
-
 
 
 module.exports = AdminRouter;
