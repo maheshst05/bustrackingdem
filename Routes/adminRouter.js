@@ -334,6 +334,116 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
 // });
 
 //search source and destination
+// AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
+//   const { sourceRoute, destinationRoute } = req.query;
+//   try {
+    
+//     const commonProjection = {
+//       "_id":1,
+//       "bus_details.busName": 1,
+//       "bus_details.busNo": 1,
+//       "driver_details.name": 1,
+//       "route_details.route": 1,
+//       "route_details.sourceRoute": 1,
+//       "route_details.destinationRoute": 1,
+//       "route_details.stops": 1,
+//       "route_details.polyline": 1,
+//       time: 1,
+//       status: 1,
+//       currentRouteLocation: 1
+//     };
+
+//     const sourceQuery = {
+//       "route_details.polyline.name": { $regex: sourceRoute, $options: "i" },
+//     };
+
+//     const destinationQuery = {
+//       "route_details.polyline.name": { $regex: destinationRoute, $options: "i" },
+//     };
+
+//     const [source, destination] = await Promise.all([
+//       BusRoute.find(sourceQuery).select(commonProjection),
+//       BusRoute.find(destinationQuery).select(commonProjection)
+//     ]);
+
+//     if (source.length === 0 && destination.length === 0) {
+//       return res.send({ msg: "No result found" });
+//     } else if (source.length === 0) {
+//       return res.send({ msg: "Source does not match with your source input" });
+//     } else if (destination.length === 0) {
+//       return res.send({ msg: "Destination does not match with your destination input" });
+//     } else {
+//       return res.send({
+//         msg: "Successfully found",
+//         source,
+//         destination
+//       });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
+
+//two
+
+// AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
+//   const { sourceRoute, destinationRoute } = req.query;
+//   try {
+    
+//     const commonProjection = {
+//       "_id":1,
+//       "bus_details.busName": 1,
+//       "bus_details.busNo": 1,
+//       "driver_details.name": 1,
+//       "route_details.route": 1,
+//       "route_details.sourceRoute": 1,
+//       "route_details.destinationRoute": 1,
+//       "route_details.stops": 1,
+//       "route_details.polyline": 1,
+//       time: 1,
+//       status: 1,
+//       currentRouteLocation: 1
+//     };
+
+//     const sourceQuery = {
+//       "route_details.polyline.name": { $regex: sourceRoute, $options: "i" },
+//     };
+
+//     const destinationQuery = {
+//       "route_details.polyline.name": { $regex: destinationRoute, $options: "i" },
+//     };
+
+//     const source = await BusRoute.find(sourceQuery).select(commonProjection);
+//     const destination = await BusRoute.find(destinationQuery).select(commonProjection);
+
+//     const response = {};
+
+//     if (source.length > 0 && destination.length > 0) {
+//       // Both source and destination match
+//       response.message = "Successfully found";
+//       response.routes = source.concat(destination);
+//     } else if (source.length > 0 && destination.length === 0) {
+//       // Source matches, but destination does not
+//       response.message = "Destination not match with your destination input";
+//       response.routes = source;
+//     } else if (source.length === 0 && destination.length > 0) {
+//       // Source does not match, but destination matches
+//       response.message = "Source not match with your source input";
+//       response.routes = destination;
+//     } else {
+//       // Neither source nor destination match
+//       response.message = "No result found";
+//       response.routes = [];
+//     }
+
+//     res.send(response);
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
+
 AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
   const { sourceRoute, destinationRoute } = req.query;
   try {
@@ -361,31 +471,39 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
       "route_details.polyline.name": { $regex: destinationRoute, $options: "i" },
     };
 
-    const [source, destination] = await Promise.all([
-      BusRoute.find(sourceQuery).select(commonProjection),
-      BusRoute.find(destinationQuery).select(commonProjection)
-    ]);
+    const source = await BusRoute.find(sourceQuery).select(commonProjection);
+    const destination = await BusRoute.find(destinationQuery).select(commonProjection);
 
-    if (source.length === 0 && destination.length === 0) {
-      return res.send({ msg: "No result found" });
-    } else if (source.length === 0) {
-      return res.send({ msg: "Source does not match with your source input" });
-    } else if (destination.length === 0) {
-      return res.send({ msg: "Destination does not match with your destination input" });
+    const response = {};
+
+    if (source.length > 0 && destination.length > 0) {
+      // Both source and destination match
+      const mergedRoutes = source.concat(destination);
+      const uniqueRoutes = Array.from(new Set(mergedRoutes.map(route => route.bus_details.busNo)))
+        .map(busNo => mergedRoutes.find(route => route.bus_details.busNo === busNo));
+
+      response.message = "Successfully found";
+      response.routes = uniqueRoutes;
+    } else if (source.length > 0 && destination.length === 0) {
+      // Source matches, but destination does not
+      response.message = "Destination not match with your destination input";
+      response.routes = source;
+    } else if (source.length === 0 && destination.length > 0) {
+      // Source does not match, but destination matches
+      response.message = "Source not match with your source input";
+      response.routes = destination;
     } else {
-      return res.send({
-        msg: "Successfully found",
-        sourceRoute: source,
-        destinationRoute: destination,
-      });
+      // Neither source nor destination match
+      response.message = "No result found";
+      response.routes = [];
     }
+
+    res.send(response);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
-
-
 
 
 
