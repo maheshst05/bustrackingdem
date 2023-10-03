@@ -108,17 +108,6 @@ AdminRouter.put("/api/update/bus/:id", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
-//delete bus by id
-// AdminRouter.delete("/api/delete/bus/:id", async (req, res) => {
-//   const id = req.params.id;
-//   try {
-//     const deletedBus = await Bus.findByIdAndDelete({ _id: id });
-//     return res.status(200).json({ message: "Bus Deleted successfully" });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ msg: "Internal server error" });
-//   }
-// });
 
 AdminRouter.delete("/api/delete/bus/:id", async (req, res) => {
   const id = req.params.id;
