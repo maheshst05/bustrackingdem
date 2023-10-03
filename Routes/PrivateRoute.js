@@ -228,7 +228,6 @@ PrivateRouter.get(
 
 
 //update current Location by private vehicle driver (start or stop)
-
 PrivateRouter.put("/api/update/location/:token/:id", async (req, res) => {
   const id = req.params.id;
   const { vehicletype, currentLocation, vehicleNo, status} = req.body;
@@ -256,5 +255,38 @@ PrivateRouter.put("/api/update/location/:token/:id", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
+PrivateRouter.get('/api/search/vehicle/:token', async (req, res)=> {
+  const {search} = req.query 
+  try {
+    const vehicles = await User.find({
+      profileType: "Manager",
+      "privateVehicle.vehicletype": { $regex: search, $options: "i" }
+    });
+    
+
+    const vehicleData = vehicles.map((vehicle) => ({
+      id: vehicle.id,
+      name: vehicle.name,
+      email: vehicle.email,
+      licenceNo: vehicle.licenceNo,
+      phoneNo: vehicle.phoneNo,
+      dob: vehicle.dob,
+      profileType: vehicle.profileType,
+      vehicleNo: vehicle.privateVehicle.vehicleNo,
+      status: vehicle.privateVehicle.status,
+      vehicletype: vehicle.privateVehicle.vehicletype,
+      currentLocation: vehicle.privateVehicle.currentLocation,
+    }));
+
+    if (vehicles.length === 0) {
+      return res.status(404).json({ error: "No results found" });
+    }
+    return res.status(200).json(vehicleData);
+  } catch (error) {
+    
+  }
+})
+
+
 
 module.exports = PrivateRouter;

@@ -336,8 +336,6 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
   }
 });
 
-
-
 //manager
 //delete manager
 
@@ -354,6 +352,24 @@ AdminRouter.get("/api/get/manager/:token", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
+
+//search manager by its name
+AdminRouter.get("/api/search/manager/:token", async (req, res) => {
+  const {search} = req.query
+  try {
+    const manager = await User.find({ profileType: "Manager" ,name: { $regex: search, $options: "i" }}).select(
+      "name id licenceNo dob phoneNo email"
+    );
+    if (manager.length === 0) {
+      return res.status(404).json({ error: "No results found" });
+    }
+    return res.status(200).json({ manager });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+});
+
 //update manager
 AdminRouter.put("/api/update/manager/:token/:id", async (req, res) => {
   const id = req.params.id;
@@ -380,6 +396,7 @@ AdminRouter.put("/api/update/manager/:token/:id", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
+//delete manager
 AdminRouter.delete("/api/delete/manager/:token/:id", async (req, res) => {
   const id = req.params.id;
   try {
@@ -424,6 +441,26 @@ AdminRouter.delete("/api/delete/user/:token/:id", async (req, res) => {
     }
 
     return res.status(200).json({ message: "User Deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+});
+
+//user search by name and city
+AdminRouter.get("/api/users/search/:token", async (req, res) => {
+  const { search } = req.query;
+  try {
+    const Users = await User.find({
+      profileType: "User",
+      name: { $regex: search, $options: "i" },
+    }).select("name id licenceNo dob phoneNo email");
+
+    if (Users.length === 0) {
+      return res.status(404).json({ error: "No results found" });
+    }
+
+    return res.status(200).json({ Users });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
