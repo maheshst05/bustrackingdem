@@ -387,7 +387,7 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
 // });
 
 //delete manager
-AdminRouter.delete("/api/delete/manager/:token?/:id", async (req, res) => {
+AdminRouter.delete("/api/delete/manager/:token/:id", async (req, res) => {
   const id = req.params.id;
   try {
     const deletemanger = await User.findByIdAndDelete(id);
