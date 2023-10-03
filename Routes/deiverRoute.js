@@ -92,6 +92,7 @@ driverRouter.get(
       const response = buses.map((bus) => ({
         bus_details: {
           busName: bus.bus_details.busName,
+          busNo:bus.bus_details.busNo,
         },
         route_details: {
           sourceRoute: bus.route_details.sourceRoute,
@@ -99,10 +100,10 @@ driverRouter.get(
           route: bus.route_details.route,
           stops: bus.route_details.stops,
           polyline: bus.route_details.polyline,
-          busName:bus.bus_details.busName        },
+      },
         driver_details: {
           name: bus.driver_details.name,
-          busNo:bus.driver_details.busNo,
+          
         },
         currentRouteLocation: bus.currentRouteLocation,
         _id: bus._id,
