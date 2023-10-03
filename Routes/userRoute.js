@@ -301,13 +301,6 @@ userRouter.get("/api/get/fev/bus/:token", authentication, async (req, res) => {
 });
 
 
-
-
-
-
-
-
-
 //update fevorate
 userRouter.put(
   "/api/like/unlike/route/:token",

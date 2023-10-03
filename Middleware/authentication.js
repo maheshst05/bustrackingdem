@@ -28,7 +28,7 @@ const authentication = async (req, res, next) => {
 
       req.id = decode.userId;
       req.ProfileType = decode.user.profileType;
-      req.favoriteBusId = decode.user.favoriteBus;
+      req.favoriteBusId  = decode.user.favoriteBus;
 
       next();
     });

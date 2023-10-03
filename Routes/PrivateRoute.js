@@ -182,7 +182,7 @@ PrivateRouter.put(
   "/api/update/live/location/:token/:id",
   authentication,
   async (req, res) => {
-    const { status, currentLocation, vehicleNo } = req.body;
+    const { currentLocation, vehicleNo } = req.body;
     const { id } = req.params;
 
     try {
@@ -227,7 +227,8 @@ PrivateRouter.get(
 );
 
 
-//update current Location by private vehicle driver
+//update current Location by private vehicle driver (start or stop)
+
 PrivateRouter.put("/api/update/location/:token/:id", async (req, res) => {
   const id = req.params.id;
   const { vehicletype, currentLocation, vehicleNo, status} = req.body;
