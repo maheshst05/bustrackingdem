@@ -7,62 +7,65 @@ const jwt = require("jsonwebtoken");
 
 
 
-//get all private vehicles
+//get all private vehicles and search
 
-PrivateRouter.get(
-  "/api/getvehicle/:token",
-  authentication,
-  async (req, res) => {
-    try {
-      const id = req.id;
-      const v = await User.findOne({ _id: id, profileType: "Private" });
 
-      if (v) {
-        const vehicleData = {
-          id: v.id,
-          name: v.name,
-          email: v.email,
-          licenceNo: v.licenceNo,
-          phoneNo: v.phoneNo,
-          dob: v.dob,
-          profileType: v.profileType,
-          vehicleNo: v.privateVehicle.vehicleNo,
-          status: v.privateVehicle.status,
-          vehicletype: v.privateVehicle.vehicletype,
-          currentLocation: v.privateVehicle.currentLocation,
-        };
+// PrivateRouter.get(
+//   "/api/getvehicle/:token",
+  
+//   async (req, res) => {
+//     try {
+//       const id = req.id;
+//       const v = await User.findOne({ _id: id, profileType: "Private" });
 
-        return res.status(200).json([vehicleData]);
-      }
+//       if (v) {
+//         const vehicleData = {
+//           id: v.id,
+//           name: v.name,
+//           email: v.email,
+//           licenceNo: v.licenceNo,
+//           phoneNo: v.phoneNo,
+//           dob: v.dob,
+//           profileType: v.profileType,
+//           vehicleNo: v.privateVehicle.vehicleNo,
+//           status: v.privateVehicle.status,
+//           vehicletype: v.privateVehicle.vehicletype,
+//           currentLocation: v.privateVehicle.currentLocation,
+//         };
 
-      const vehicles = await User.find({ profileType: "Private" });
+//         return res.status(200).json([vehicleData]);
+//       }
 
-      if (!vehicles || vehicles.length === 0) {
-        return res.status(404).json({ error: "No private vehicles found" });
-      }
+//       const vehicles = await User.find({ profileType: "Private" });
 
-      // Assuming you want to return data for all found vehicles
-      const vehicleData = vehicles.map((vehicle) => ({
-        id: vehicle.id,
-        name: vehicle.name,
-        email: vehicle.email,
-        licenceNo: vehicle.licenceNo,
-        phoneNo: vehicle.phoneNo,
-        dob: vehicle.dob,
-        profileType: vehicle.profileType,
-        vehicleNo: vehicle.privateVehicle.vehicleNo,
-        status: vehicle.privateVehicle.status,
-        vehicletype: vehicle.privateVehicle.vehicletype,
-        currentLocation: vehicle.privateVehicle.currentLocation,
-      }));
+//       if (!vehicles || vehicles.length === 0) {
+//         return res.status(404).json({ error: "No private vehicles found" });
+//       }
 
-      return res.status(200).json(vehicleData);
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ msg: "Internal server error" });
-    }
-  }
-);
+//       // Assuming you want to return data for all found vehicles
+//       const vehicleData = vehicles.map((vehicle) => ({
+//         id: vehicle.id,
+//         name: vehicle.name,
+//         email: vehicle.email,
+//         licenceNo: vehicle.licenceNo,
+//         phoneNo: vehicle.phoneNo,
+//         dob: vehicle.dob,
+//         profileType: vehicle.profileType,
+//         vehicleNo: vehicle.privateVehicle.vehicleNo,
+//         status: vehicle.privateVehicle.status,
+//         vehicletype: vehicle.privateVehicle.vehicletype,
+//         currentLocation: vehicle.privateVehicle.currentLocation,
+//       }));
+
+//       return res.status(200).json(vehicleData);
+//     } catch (error) {
+//       console.error(error);
+//       return res.status(500).json({ msg: "Internal server error" });
+//     }
+//   }
+// );
+
+
 
 //post private vehicle
 PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
@@ -255,37 +258,156 @@ PrivateRouter.put("/api/update/location/:token/:id", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
-PrivateRouter.get('/api/search/vehicle/:token', async (req, res)=> {
-  const {search} = req.query 
+
+
+// PrivateRouter.get(
+//   "/api/getvehicle/:token",authentication,
+//   async (req, res) => {
+//     try {
+//       const { search } = req.query; // Extract the "search" query parameter
+
+//       if (search) {
+//         // Find users with profileType "Manager" and matching vehicletype
+//         const vehicles = await User.find({
+//           profileType: "Private",
+//           "privateVehicle.vehicletype": { $regex: search, $options: "i" },
+//         });
+
+//         const vehicleData = vehicles.map((vehicle) => ({
+//           id: vehicle.id,
+//           name: vehicle.name,
+//           email: vehicle.email,
+//           licenceNo: vehicle.licenceNo,
+//           phoneNo: vehicle.phoneNo,
+//           dob: vehicle.dob,
+//           profileType: vehicle.profileType,
+//           vehicleNo: vehicle.privateVehicle.vehicleNo,
+//           status: vehicle.privateVehicle.status,
+//           vehicletype: vehicle.privateVehicle.vehicletype,
+//           currentLocation: vehicle.privateVehicle.currentLocation,
+//         }));
+
+//         if (vehicles.length === 0) {
+//           return res.status(404).json({ error: "No results found" });
+//         }
+
+//         return res.status(200).json(vehicleData);
+//       }
+
+//       const id = req.id;
+//       const v = await User.findOne({ _id: id, profileType: "Private" });
+
+//       if (v) {
+//         const vehicleData = {
+//           id: v.id,
+//           name: v.name,
+//           email: v.email,
+//           licenceNo: v.licenceNo,
+//           phoneNo: v.phoneNo,
+//           dob: v.dob,
+//           profileType: v.profileType,
+//           vehicleNo: v.privateVehicle.vehicleNo,
+//           status: v.privateVehicle.status,
+//           vehicletype: v.privateVehicle.vehicletype,
+//           currentLocation: v.privateVehicle.currentLocation,
+//         };
+
+//         return res.status(200).json([vehicleData]);
+//       }
+
+//       const vehicles = await User.find({ profileType: "Private" });
+
+//       if (!vehicles || vehicles.length === 0) {
+//         return res.status(404).json({ error: "No private vehicles found" });
+//       }
+      
+//       // Assuming you want to return data for all found vehicles
+//       const vehicleData = vehicles.map((vehicle) => ({
+//         id: vehicle.id,
+//         name: vehicle.name,
+//         email: vehicle.email,
+//         licenceNo: vehicle.licenceNo,
+//         phoneNo: vehicle.phoneNo,
+//         dob: vehicle.dob,
+//         profileType: vehicle.profileType,
+//         vehicleNo: vehicle.privateVehicle.vehicleNo,
+//         status: vehicle.privateVehicle.status,
+//         vehicletype: vehicle.privateVehicle.vehicletype,
+//         currentLocation: vehicle.privateVehicle.currentLocation,
+//       }));
+
+//       return res.status(200).json(vehicleData);
+
+
+//     } catch (error) {
+//       console.error(error);
+//       return res.status(500).json({ msg: "Internal server error" });
+//     }
+//   }
+// );
+
+PrivateRouter.get("/api/getvehicle/:token", authentication, async (req, res) => {
   try {
-    const vehicles = await User.find({
-      profileType: "Manager",
-      "privateVehicle.vehicletype": { $regex: search, $options: "i" }
-    });
-    
+    const { search } = req.query;
 
-    const vehicleData = vehicles.map((vehicle) => ({
-      id: vehicle.id,
-      name: vehicle.name,
-      email: vehicle.email,
-      licenceNo: vehicle.licenceNo,
-      phoneNo: vehicle.phoneNo,
-      dob: vehicle.dob,
-      profileType: vehicle.profileType,
-      vehicleNo: vehicle.privateVehicle.vehicleNo,
-      status: vehicle.privateVehicle.status,
-      vehicletype: vehicle.privateVehicle.vehicletype,
-      currentLocation: vehicle.privateVehicle.currentLocation,
-    }));
+    // Find private vehicles based on search criteria if provided
+    if (search) {
+      const vehicles = await User.find({
+        profileType: "Private",
+        "privateVehicle.vehicletype": { $regex: search, $options: "i" },
+      });
 
-    if (vehicles.length === 0) {
-      return res.status(404).json({ error: "No results found" });
+      if (vehicles.length === 0) {
+        return res.status(404).json({ error: "No results found" });
+      }
+
+      const vehicleData = vehicles.map(mapUserToVehicleData);
+      return res.status(200).json(vehicleData);
     }
+
+    const id = req.id;
+
+    // Find a specific private vehicle by ID
+    if (id) {
+      const vehicle = await User.findOne({ _id: id, profileType: "Private" });
+
+      if (vehicle) {
+        const vehicleData = mapUserToVehicleData(vehicle);
+        return res.status(200).json([vehicleData]);
+      }
+    }
+
+    // If no search criteria or ID provided, return all private vehicles
+    const vehicles = await User.find({ profileType: "Private" });
+
+    if (!vehicles || vehicles.length === 0) {
+      return res.status(404).json({ error: "No private vehicles found" });
+    }
+
+    const vehicleData = vehicles.map(mapUserToVehicleData);
     return res.status(200).json(vehicleData);
   } catch (error) {
-    
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
   }
-})
+});
+
+// Helper function to map User data to vehicleData format
+function mapUserToVehicleData(user) {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    licenceNo: user.licenceNo,
+    phoneNo: user.phoneNo,
+    dob: user.dob,
+    profileType: user.profileType,
+    vehicleNo: user.privateVehicle.vehicleNo,
+    status: user.privateVehicle.status,
+    vehicletype: user.privateVehicle.vehicletype,
+    currentLocation: user.privateVehicle.currentLocation,
+  };
+}
 
 
 

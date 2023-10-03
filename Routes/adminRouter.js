@@ -339,36 +339,32 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
 //manager
 //delete manager
 
-//get Manager
+//get all and search Manager
 AdminRouter.get("/api/get/manager/:token", async (req, res) => {
   try {
-    const manager = await User.find({ profileType: "Manager" }).select(
+    const { search } = req.query;
+    let query = { profileType: "Manager" };
+    
+    if (search) {
+      query.name = { $regex: search, $options: "i" };
+    }
+
+    const managers = await User.find(query).select(
       "name id licenceNo dob phoneNo email"
     );
 
-    return res.status(200).json({ manager });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ msg: "Internal server error" });
-  }
-});
-
-//search manager by its name
-AdminRouter.get("/api/search/manager/:token", async (req, res) => {
-  const {search} = req.query
-  try {
-    const manager = await User.find({ profileType: "Manager" ,name: { $regex: search, $options: "i" }}).select(
-      "name id licenceNo dob phoneNo email"
-    );
-    if (manager.length === 0) {
+    if (managers.length === 0) {
       return res.status(404).json({ error: "No results found" });
     }
-    return res.status(200).json({ manager });
+
+    return res.status(200).json({ manager: managers });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
+
+
 
 //update manager
 AdminRouter.put("/api/update/manager/:token/:id", async (req, res) => {
@@ -418,7 +414,14 @@ AdminRouter.delete("/api/delete/manager/:token/:id", async (req, res) => {
 //get all users
 AdminRouter.get("/api/get/User/:token", async (req, res) => {
   try {
-    const Users = await User.find({ profileType: "User" }).select(
+    const { search } = req.query;
+    let query = { profileType: "User" };
+    
+    if (search) {
+      query.name = { $regex: search, $options: "i" };
+    }
+
+    const Users = await User.find(query).select(
       "name id licenceNo dob phoneNo email"
     );
 
@@ -447,24 +450,6 @@ AdminRouter.delete("/api/delete/user/:token/:id", async (req, res) => {
   }
 });
 
-//user search by name and city
-AdminRouter.get("/api/users/search/:token", async (req, res) => {
-  const { search } = req.query;
-  try {
-    const Users = await User.find({
-      profileType: "User",
-      name: { $regex: search, $options: "i" },
-    }).select("name id licenceNo dob phoneNo email");
-
-    if (Users.length === 0) {
-      return res.status(404).json({ error: "No results found" });
-    }
-
-    return res.status(200).json({ Users });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ msg: "Internal server error" });
-  }
-});
 
 module.exports = AdminRouter;
+//swagger
