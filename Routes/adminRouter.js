@@ -347,62 +347,10 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
   }
 });
 
+
+
 //manager
-//add manager
-
-// AdminRouter.post("/api/auth/register/:token?", async (req, res) => {
-//   try {
-//     const { name, email, password, dob, phoneNo, age, profileType, licenceNo } =
-//       req.body;
-
-//     const phoneNoCheck = await User.findOne({ phoneNo });
-//     if (phoneNoCheck) {
-//       return res
-//         .status(400)
-//         .json({ msg: "Phone Number already used", status: false });
-//     }
-
-//     const emailCheck = await User.findOne({ email });
-//     if (emailCheck) {
-//       return res.status(400).json({ msg: "Email already used", status: false });
-//     }
-
-//     const hashedPassword = await bcrypt.hash(password, 10);
-//     const user = await User.create({
-//       email,
-//       name,
-//       phoneNo,
-//       dob,
-//       age,
-//       profileType,
-//       licenceNo,
-//       password: hashedPassword,
-//     });
-
-//     return res.status(200).json({ status: true, user });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ msg: "An error occurred", status: false });
-//   }
-// });
-
 //delete manager
-AdminRouter.delete("/api/delete/manager/:token/:id", async (req, res) => {
-  const id = req.params.id;
-  try {
-    const deletemanger = await User.findByIdAndDelete(id);
-    if (!deletemanger) {
-      return res.status(404).json({
-        error: "Manager not found.",
-      });
-    }
-
-    return res.status(200).json({ message: "Manager Deleted successfully" });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ msg: "Internal server error" });
-  }
-});
 
 //get Manager
 AdminRouter.get("/api/get/manager/:token", async (req, res) => {
@@ -438,6 +386,22 @@ AdminRouter.put("/api/update/manager/:token/:id", async (req, res) => {
     }
 
     return res.status(200).json({ message: "Manager Updated successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+});
+AdminRouter.delete("/api/delete/manager/:token/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const deletemanger = await User.findByIdAndDelete(id);
+    if (!deletemanger) {
+      return res.status(404).json({
+        error: "Manager not found.",
+      });
+    }
+
+    return res.status(200).json({ message: "Manager Deleted successfully" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
