@@ -99,9 +99,10 @@ driverRouter.get(
           route: bus.route_details.route,
           stops: bus.route_details.stops,
           polyline: bus.route_details.polyline,
-          busName:bus.bus_details.busNo        },
+          busName:bus.bus_details.busName        },
         driver_details: {
           name: bus.driver_details.name,
+          busNo:bus.driver_details.busNo,
         },
         currentRouteLocation: bus.currentRouteLocation,
         _id: bus._id,
