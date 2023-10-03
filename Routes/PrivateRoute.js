@@ -193,7 +193,7 @@ PrivateRouter.put(
       }
 
       // Update the vehicle's live location and status
-      vehicle.privateVehicle.status = status;
+      
       vehicle.privateVehicle.currentLocation = currentLocation;
       vehicle.privateVehicle.vehicleNo = vehicleNo;
       // Save the updated vehicle information
