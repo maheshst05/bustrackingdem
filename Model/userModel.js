@@ -12,17 +12,17 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "User",
     },
-    privateVehicle: {
-      vehicleNo: String,
-      status:{type: String, default:'STOP'},
-      vehicletype: String,
-      currentLocation: {
-        latitude: Number,
-        longitude: Number,
-        latitudeDelta: Number,
-        longitudeDelta: Number,
-      },
-    },
+    // privateVehicle: {
+    //   vehicleNo: String,
+    //   status:{type: String, default:'STOP'},
+    //   vehicletype: String,
+    //   currentLocation: {
+    //     latitude: Number,
+    //     longitude: Number,
+    //     latitudeDelta: Number,
+    //     longitudeDelta: Number,
+    //   },
+    //},
     favoriteBus:{
       id:String,
       isFavorite:String,
