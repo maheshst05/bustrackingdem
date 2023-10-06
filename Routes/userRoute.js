@@ -381,9 +381,11 @@ console.log(user)
 if (!search) {
   return res.status(404).json({ message: "Route not found" });
 }
-if (search._id.toString() === user.favoriteBusId) {
+if (search._id.toString() === user.favoriteBus) {
+  console.log("favoriteBus")
   return res.status(200).json({ ...search.toObject(), isFavorite: true });
 }
+console.log("favoriteBusNOOOoo")
 return res.status(200).json({ ...search.toObject(), isFavorite: false });
 
 } catch (error) {
