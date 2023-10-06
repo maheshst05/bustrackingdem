@@ -23,12 +23,14 @@ const userSchema = new mongoose.Schema(
         longitudeDelta: Number,
       },
     },
-  //   favoriteBus:{
-  // type:String,
-  //      isFavorite:Boolean,
-  //   },
- favoriteBus:String,
-  },
+    favoriteBus:{
+      busId: String,
+      isFavorite:Boolean,  
+    }
+//  favoriteBus:String,
+//  isFavorite:Boolean,
+
+},
   { timestamps: true }
 );
 

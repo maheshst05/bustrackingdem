@@ -199,7 +199,12 @@ userRouter.get("/api/get-bus/:token?", async (req, res) => {
       _id: 1,
       "bus_details.busName": 1,
       "bus_details.busNo": 1,
+      "bus_details._id":1,
+      "driver_details._id":1,
       "driver_details.name": 1,
+      "driver_details.licenceNo":1,
+      "driver_details.phoneNo":1,
+      "driver_details.email":1,
       "route_details.route": 1,
       "route_details.sourceRoute": 1,
       "route_details.destinationRoute": 1,
@@ -262,15 +267,14 @@ userRouter.get(
   }
 );
 
-// Get user's favorite bus
+//Get user's favorite bus
 userRouter.get("/api/get/fev/bus/:token", authentication, async (req, res) => {
   try {
     const user = await User.findById(req.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    const getUserFev = await BusRoute.findOne({ _id: user.favoriteBus }).select(
+  const getUserFev = await BusRoute.findOne({ _id: user.favoriteBus }).select(
       {
         _id: 1,
         "bus_details.busName": 1,
@@ -297,101 +301,91 @@ userRouter.get("/api/get/fev/bus/:token", authentication, async (req, res) => {
   }
 });
 
-//update fevorate
-userRouter.put(
-  "/api/like/unlike/route/:token",
-  authentication,
-  async (req, res) => {
-    try {
-      const likeUnlike = await User.findByIdAndUpdate(
-        { _id: req.id },
-        req.body
-      );
-      return res.status(200).json({ message: "fevrate route updated" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server Error" });
-    }
-  }
-);
-
 //search Route
-// const { ObjectId } = require("mongoose").Types;
-// userRouter.get("/api/route/:token?", authentication, async (req, res) => {
-//   const { searchroute } = req.query;
-//   const favoriteBusId = req.favoriteBusId;
-//   console.log(favoriteBusId);
-
-//   try {
-//     const regexPattern =
-//       typeof searchroute === "string" ? searchroute : String(searchroute);
-    // const search = await BusRoute.findOne({
-    //   "bus_details.busName": { $regex: regexPattern, $options: "i" },
-    // }).select({
-    //   _id: 1,
-    //   "bus_details.busName": 1,
-    //   "bus_details.busNo": 1,
-    //   "driver_details.name": 1,
-    //   "route_details.route": 1,
-    //   "route_details.sourceRoute": 1,
-    //   "route_details.destinationRoute": 1,
-    //   "route_details.stops": 1,
-    //   "route_details.polyline": 1,
-    //   time: 1,
-    //   status: 1,
-    //   currentRouteLocation: 1,
-    // });
-
-    // if (!search) {
-    //   return res.status(404).json({ message: "Route not found" });
-    // }
-    // if (search._id.toString() === favoriteBusId) {
-    //   return res.status(200).json({ ...search.toObject(), isFavorite: true });
-    // }
-    // return res.status(200).json({ ...search.toObject(), isFavorite: false });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Server Error" });
-//   }
-// });
-
-//search Route
-
 userRouter.get("/api/route/:token?", authentication, async (req, res) => {
   const { searchroute } = req.query;
-try {
-const user = await User.findOne({_id: req.id})
-const search = await BusRoute.findOne({
-  "bus_details.busName": { $regex: `${searchroute}`, $options: "i" },
-}).select({
-  _id: 1,
-  "bus_details.busName": 1,
-  "bus_details.busNo": 1,
-  "driver_details.name": 1,
-  "route_details.route": 1,
-  "route_details.sourceRoute": 1,
-  "route_details.destinationRoute": 1,
-  "route_details.stops": 1,
-  "route_details.polyline": 1,
-  time: 1,
-  status: 1,
-  currentRouteLocation: 1,
-});
-console.log(user)
-if (!search) {
-  return res.status(404).json({ message: "Route not found" });
-}
-if (search._id.toString() === user.favoriteBus) {
-  console.log("favoriteBus")
-  return res.status(200).json({ ...search.toObject(), isFavorite: true });
-}
-console.log("favoriteBusNOOOoo")
-return res.status(200).json({ ...search.toObject(), isFavorite: false });
-
-} catch (error) {
+  try {
+    const user = await User.findOne({ _id: req.id });
+    const search = await BusRoute.findOne({
+      "bus_details.busName": { $regex: `${searchroute}`, $options: "i" },
+    }).select({
+      _id: 1,
+      "bus_details.busName": 1,
+      "bus_details.busNo": 1,
+      "driver_details.name": 1,
+      "route_details.route": 1,
+      "route_details.sourceRoute": 1,
+      "route_details.destinationRoute": 1,
+      "route_details.stops": 1,
+      "route_details.polyline": 1,
+      time: 1,
+      status: 1,
+      currentRouteLocation: 1,
+    });
+    console.log(user);
+    if (!search) {
+      return res.status(404).json({ message: "Route not found" });
+    }
+    if (search._id.toString() === user.favoriteBus) {
+      console.log("favoriteBus");
+      return res.status(200).json({ ...search.toObject(), isFavorite: true });
+    }
+    console.log("favoriteBusNOOOoo");
+    return res.status(200).json({ ...search.toObject(), isFavorite: false });
+  } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
   }
 });
+
+//update fevorate
+// userRouter.put(
+//   "/api/like/unlike/route/:token",
+//   authentication,
+//   async (req, res) => {
+//     try {
+//       const like = await User.findByIdAndUpdate({ _id: req.id }, req.body);
+//       return res.status(200).json({ message: "fevrate route updated" });
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ message: "Server Error" });
+//     }
+//   }
+// );
+
+
+//like and unlike
+userRouter.post("/toggle-like/:token/:busId", async (req, res) => {
+  try {
+    const userId = req.id;
+    const busId = req.params.busId;
+
+    // Find the user by userId
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Find the index of the bus in the user's favorite buses array
+    const busIndex = user.favoriteBus.findIndex((bus) => bus.busId === busId);
+
+    if (busIndex === -1) {
+      // If the bus is not in favorites, add it as liked
+      user.favoriteBus.push({ busId, isFavorite: true });
+    } else {
+      // If the bus is already in favorites, toggle its liked status
+      user.favoriteBus[busIndex].isFavorite = !user.favoriteBus[busIndex].isFavorite;
+    }
+
+    await user.save();
+
+    res.status(200).json({ message: "Favorite bus status updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 
 module.exports = userRouter;
