@@ -8,12 +8,39 @@ const Country = require("../Model/countryModel");
 //drivers
 
 // Get all drivers
-AdminRouter.get("/api/get/drivers", async (req, res) => {
+// AdminRouter.get("/api/get/drivers", async (req, res) => {
+//   try {
+//     const managers = await User.find({ profileType: "Driver" }).select(
+//       "name id licenceNo dob phoneNo email"
+//     );
+//     return res.status(200).json({ managers });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
+
+AdminRouter.get("/api/get/drivers/:isvisible", async (req, res) => {
+  const isvisible = req.params.isvisible;
   try {
-    const managers = await User.find({ profileType: "Driver" }).select(
-      "name id licenceNo dob phoneNo email"
-    );
-    return res.status(200).json({ managers });
+    if (isvisible === "true") {
+      const managers = await User.find({ profileType: "Driver" }).select(
+        "name id licenceNo dob phoneNo email"
+      );
+      return res.status(200).json({ managers });
+    } else {
+      const isAssignedDriver = await BusRoute.find().select(
+        "driver_details._id"
+      );
+      const ids = isAssignedDriver.map((item) => item.driver_details._id);
+
+      const managers = await User.find({
+        profileType: "Driver",
+        _id: { $nin: ids },
+      }).select("name id licenceNo dob phoneNo email");
+
+      return res.status(200).json({ managers });
+    }
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
@@ -136,11 +163,33 @@ AdminRouter.delete("/api/delete/bus/:id", async (req, res) => {
 });
 
 //get buses
-AdminRouter.get("/api/get/buses", async (req, res) => {
-  try {
-    const Buses = await Bus.find();
+// AdminRouter.get("/api/get/buses", async (req, res) => {
+//   try {
+//     const Buses = await Bus.find();
 
-    return res.status(200).json({ Buses });
+//     return res.status(200).json({ Buses });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
+
+AdminRouter.get("/api/get/buses/:isvisible", async (req, res) => {
+  const isvisible = req.params.isvisible;
+  try {
+    if (isvisible === "true") {
+      const Buses = await Bus.find();
+      return res.status(200).json({ Buses });
+    } else {
+      const assignedBuses = await BusRoute.find().select("bus_details._id")
+      const ids = assignedBuses.map((item) => item.bus_details._id);
+      // res.send(ids)
+      const Buses = await Bus.find({
+        _id: { $nin: ids },
+      })
+
+      return res.status(200).json({ Buses });
+    }
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
@@ -148,7 +197,6 @@ AdminRouter.get("/api/get/buses", async (req, res) => {
 });
 
 //Route
-
 //add routes
 AdminRouter.post("/api/add/route", async (req, res) => {
   try {
@@ -454,7 +502,7 @@ AdminRouter.delete("/api/delete/user/:token/:id", async (req, res) => {
 AdminRouter.get("/api/get/country/", async (req, res) => {
   try {
     const countryes = await Country.find();
-    return res.status(200).json( countryes );
+    return res.status(200).json(countryes);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
@@ -464,9 +512,9 @@ AdminRouter.get("/api/get/country/", async (req, res) => {
 //post countryes
 AdminRouter.post("/api/post/country/", async (req, res) => {
   try {
-    const { countryName } = req.body; 
+    const { countryName } = req.body;
 
-    const existingCountry = await Country.findOne({ countryName }); 
+    const existingCountry = await Country.findOne({ countryName });
 
     if (existingCountry) {
       return res.status(400).json({ msg: "Country already exists" });
@@ -475,7 +523,7 @@ AdminRouter.post("/api/post/country/", async (req, res) => {
     const newCountry = new Country(req.body);
     await newCountry.save();
 
-    return res.status(200).json({msg:"New country added successfully"});
+    return res.status(200).json({ msg: "New country added successfully" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
@@ -508,6 +556,5 @@ AdminRouter.delete("/api/delete/country/:id", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
-
 
 module.exports = AdminRouter;
