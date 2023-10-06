@@ -236,6 +236,8 @@ AdminRouter.put("/api/update/busroute/:id", async (req, res) => {
   }
 });
 
+
+
 //delete  BusRoutes
 AdminRouter.delete("/api/delete/busroute/:id", async (req, res) => {
   const id = req.params.id;
@@ -257,6 +259,12 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
+
+// edit bus with routes
+
+
+
+
 
 //search bus using sourse and destination..
 
@@ -450,6 +458,15 @@ AdminRouter.delete("/api/delete/user/:token/:id", async (req, res) => {
   }
 });
 
+//country
+AdminRouter.get('/get/country/get',async()=>{
+  try {
+    
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+})
+
 
 module.exports = AdminRouter;
-//swagger

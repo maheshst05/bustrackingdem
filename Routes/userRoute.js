@@ -199,12 +199,12 @@ userRouter.get("/api/get-bus/:token?", async (req, res) => {
       _id: 1,
       "bus_details.busName": 1,
       "bus_details.busNo": 1,
-      "bus_details._id":1,
-      "driver_details._id":1,
+      "bus_details._id": 1,
+      "driver_details._id": 1,
       "driver_details.name": 1,
-      "driver_details.licenceNo":1,
-      "driver_details.phoneNo":1,
-      "driver_details.email":1,
+      "driver_details.licenceNo": 1,
+      "driver_details.phoneNo": 1,
+      "driver_details.email": 1,
       "route_details.route": 1,
       "route_details.sourceRoute": 1,
       "route_details.destinationRoute": 1,
@@ -267,66 +267,65 @@ userRouter.get(
   }
 );
 
-
-
-
 //like and unlike
-userRouter.put("/api/like/unlike/route/:token",authentication, async (req, res) => {
-  try {
-    const userId = req.id
-    console.log(userId)
-    const { RouteId, isFavorite } = req.body;
+userRouter.put(
+  "/api/like/unlike/route/:token",
+  authentication,
+  async (req, res) => {
+    try {
+      const userId = req.id;
+      console.log(userId);
+      const { RouteId, isFavorite } = req.body;
 
-    // Find the user by their ID
-    const user = await User.findById(userId);
+      // Find the user by their ID
+      const user = await User.findById(userId);
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      user.favoriteRoute = {
+        RouteId,
+        isFavorite,
+      };
+
+      // Save the updated user
+      await user.save();
+
+      res.json({ message: "Favorite route updated successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server Error" });
     }
-
-    // Update the favoriteRoute object
-    user.favoriteRoute = {
-      RouteId,
-      isFavorite,
-    };
-
-    // Save the updated user
-    await user.save();
-
-    res.json({ message: "Favorite route updated successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error" });
   }
-});
-
+);
 
 //Get user's favorite bus
 userRouter.get("/api/get/fev/bus/:token", authentication, async (req, res) => {
   try {
     const user = await User.findOne({
-      _id: req.id,                
-      'favoriteRoute.isFavorite': true
+      _id: req.id,
+      "favoriteRoute.isFavorite": true,
     });
     if (!user) {
       return res.status(404).json({ message: "No favorite bus found" });
     }
-  const getUserFev = await BusRoute.findOne({ _id: user.favoriteRoute.RouteId }).select(
-      {
-        _id: 1,
-        "bus_details.busName": 1,
-        "bus_details.busNo": 1,
-        "driver_details.name": 1,
-        "route_details.route": 1,
-        "route_details.sourceRoute": 1,
-        "route_details.destinationRoute": 1,
-        "route_details.stops": 1,
-        "route_details.polyline": 1,
-        time: 1,
-        status: 1,
-        currentRouteLocation: 1,
-      }
-    );
+    const getUserFev = await BusRoute.findOne({
+      _id: user.favoriteRoute.RouteId,
+    }).select({
+      _id: 1,
+      "bus_details.busName": 1,
+      "bus_details.busNo": 1,
+      "driver_details.name": 1,
+      "route_details.route": 1,
+      "route_details.sourceRoute": 1,
+      "route_details.destinationRoute": 1,
+      "route_details.stops": 1,
+      "route_details.polyline": 1,
+      time: 1,
+      status: 1,
+      currentRouteLocation: 1,
+    });
 
     if (!getUserFev) {
       return res.status(404).json({ message: "No favorite bus found" });
@@ -337,7 +336,6 @@ userRouter.get("/api/get/fev/bus/:token", authentication, async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
-
 
 //search Route
 userRouter.get("/api/route/:token?", authentication, async (req, res) => {
@@ -363,21 +361,18 @@ userRouter.get("/api/route/:token?", authentication, async (req, res) => {
     //console.log(user);
     if (!search) {
       return res.status(404).json({ message: "Route not found" });
-   
     }
-    if (search._id.toString() === user.favoriteRoute.RouteId && user.favoriteRoute.isFavorite === true ) {
-      
+    if (
+      search._id.toString() === user.favoriteRoute.RouteId &&
+      user.favoriteRoute.isFavorite === true
+    ) {
       return res.status(200).json({ ...search.toObject(), isFavorite: true });
-   
     }
-    console.log("favoriteBusNOOOoo");
-    return res.status(200).json({ ...search.toObject(), isFavorite: false });
 
+    return res.status(200).json({ ...search.toObject(), isFavorite: false });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Server Error" });
   }
 });
-
 
 module.exports = userRouter;

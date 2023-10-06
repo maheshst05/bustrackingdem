@@ -1,12 +1,13 @@
 const mongoose = require("mongoose");
 
 const busRouteSchema = new mongoose.Schema({
-  time: String,
   status: { type: String, default: "STOP" },
   bus_details: {
     _id: String,
     busName: String,
     busNo: String,
+    fuelType:String,
+    fuelCapacity:String
   },
   route_details: {
     _id: String,
