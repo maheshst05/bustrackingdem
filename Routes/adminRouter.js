@@ -13,7 +13,6 @@ AdminRouter.get("/api/get/drivers", async (req, res) => {
     const managers = await User.find({ profileType: "Driver" }).select(
       "name id licenceNo dob phoneNo email"
     );
-
     return res.status(200).json({ managers });
   } catch (error) {
     console.error(error);
@@ -473,7 +472,7 @@ AdminRouter.post("/api/post/country/", async (req, res) => {
       return res.status(400).json({ msg: "Country already exists" });
     }
 
-    const newCountry = new Country({ countryName });
+    const newCountry = new Country(req.body);
     await newCountry.save();
 
     return res.status(200).json({msg:"New country added successfully"});
