@@ -368,7 +368,7 @@ userRouter.get("/api/route/:token?", authentication, async (req, res) => {
     if (search._id.toString() === user.favoriteRoute.RouteId && user.favoriteRoute.isFavorite === true ) {
       
       return res.status(200).json({ ...search.toObject(), isFavorite: true });
-   return res.send("fev")
+   
     }
     console.log("favoriteBusNOOOoo");
     return res.status(200).json({ ...search.toObject(), isFavorite: false });
