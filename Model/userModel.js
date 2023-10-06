@@ -23,10 +23,11 @@ const userSchema = new mongoose.Schema(
         longitudeDelta: Number,
       },
     },
-    favoriteBus:{
-      busId: String,
-      isFavorite:Boolean,  
-    }
+    favoriteRoute: {
+      RouteId: String,
+        isFavorite: Boolean,
+      },
+    
 //  favoriteBus:String,
 //  isFavorite:Boolean,
 
@@ -37,3 +38,6 @@ const userSchema = new mongoose.Schema(
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
+
+
+

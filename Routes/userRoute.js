@@ -267,14 +267,51 @@ userRouter.get(
   }
 );
 
-//Get user's favorite bus
-userRouter.get("/api/get/fev/bus/:token", authentication, async (req, res) => {
+
+
+
+//like and unlike
+userRouter.put("/api/like/unlike/route/:token",authentication, async (req, res) => {
   try {
-    const user = await User.findById(req.id);
+    const userId = req.id
+    console.log(userId)
+    const { RouteId, isFavorite } = req.body;
+
+    // Find the user by their ID
+    const user = await User.findById(userId);
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-  const getUserFev = await BusRoute.findOne({ _id: user.favoriteBus }).select(
+
+    // Update the favoriteRoute object
+    user.favoriteRoute = {
+      RouteId,
+      isFavorite,
+    };
+
+    // Save the updated user
+    await user.save();
+
+    res.json({ message: "Favorite route updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+
+//Get user's favorite bus
+userRouter.get("/api/get/fev/bus/:token", authentication, async (req, res) => {
+  try {
+    const user = await User.findOne({
+      _id: req.id,                
+      'favoriteRoute.isFavorite': true
+    });
+    if (!user) {
+      return res.status(404).json({ message: "No favorite bus found" });
+    }
+  const getUserFev = await BusRoute.findOne({ _id: user.favoriteRoute.RouteId }).select(
       {
         _id: 1,
         "bus_details.busName": 1,
@@ -301,6 +338,7 @@ userRouter.get("/api/get/fev/bus/:token", authentication, async (req, res) => {
   }
 });
 
+
 //search Route
 userRouter.get("/api/route/:token?", authentication, async (req, res) => {
   const { searchroute } = req.query;
@@ -322,68 +360,22 @@ userRouter.get("/api/route/:token?", authentication, async (req, res) => {
       status: 1,
       currentRouteLocation: 1,
     });
-    console.log(user);
+    //console.log(user);
     if (!search) {
       return res.status(404).json({ message: "Route not found" });
+   
     }
-    if (search._id.toString() === user.favoriteBus) {
-      console.log("favoriteBus");
+    if (search._id.toString() === user.favoriteRoute.RouteId && user.favoriteRoute.isFavorite === true ) {
+      
       return res.status(200).json({ ...search.toObject(), isFavorite: true });
+   return res.send("fev")
     }
     console.log("favoriteBusNOOOoo");
     return res.status(200).json({ ...search.toObject(), isFavorite: false });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
-  }
-});
-
-//update fevorate
-// userRouter.put(
-//   "/api/like/unlike/route/:token",
-//   authentication,
-//   async (req, res) => {
-//     try {
-//       const like = await User.findByIdAndUpdate({ _id: req.id }, req.body);
-//       return res.status(200).json({ message: "fevrate route updated" });
-//     } catch (error) {
-//       console.error(error);
-//       res.status(500).json({ message: "Server Error" });
-//     }
-//   }
-// );
-
-
-//like and unlike
-userRouter.post("/toggle-like/:token/:busId", async (req, res) => {
-  try {
-    const userId = req.id;
-    const busId = req.params.busId;
-
-    // Find the user by userId
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Find the index of the bus in the user's favorite buses array
-    const busIndex = user.favoriteBus.findIndex((bus) => bus.busId === busId);
-
-    if (busIndex === -1) {
-      // If the bus is not in favorites, add it as liked
-      user.favoriteBus.push({ busId, isFavorite: true });
-    } else {
-      // If the bus is already in favorites, toggle its liked status
-      user.favoriteBus[busIndex].isFavorite = !user.favoriteBus[busIndex].isFavorite;
-    }
-
-    await user.save();
-
-    res.status(200).json({ message: "Favorite bus status updated successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
   }
 });
 
