@@ -49,12 +49,7 @@ const busRouteSchema = new mongoose.Schema({
     phoneNo: Number,
     email: String,
   },
-  country_details: {
-    
-      countryName: String,
-      countryCode:String,
-    
-  },
+  
   currentRouteLocation: {
     latitude: Number,
     longitude: Number,

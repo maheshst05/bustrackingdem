@@ -29,6 +29,12 @@ const routeSchema = new mongoose.Schema({
       name:String
     },
   ],
+  country_details: {
+    _id: String,
+      countryName: String,
+      countryCode:String,
+    
+  }
 });
 
 const Route = mongoose.model("Route", routeSchema);
