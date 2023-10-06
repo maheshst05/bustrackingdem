@@ -251,7 +251,6 @@ userRouter.get(
           currentRouteLocation: bus.currentRouteLocation,
           busName: bus.bus_details.busName,
         };
-
         simplifiedBuses.push(busResponse);
       }
 
@@ -291,15 +290,12 @@ userRouter.get("/api/get/fev/bus/:token", authentication, async (req, res) => {
     if (!getUserFev) {
       return res.status(404).json({ message: "No favorite bus found" });
     }
-
-    // res.send(getUserFev);
-    res.send({...getUserFev.toObject(),isFevorite:true});
+    res.send({ ...getUserFev.toObject(), isFevorite: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
   }
 });
-
 
 //update fevorate
 userRouter.put(
@@ -320,41 +316,77 @@ userRouter.put(
 );
 
 //search Route
-const { ObjectId } = require("mongoose").Types;
+// const { ObjectId } = require("mongoose").Types;
+// userRouter.get("/api/route/:token?", authentication, async (req, res) => {
+//   const { searchroute } = req.query;
+//   const favoriteBusId = req.favoriteBusId;
+//   console.log(favoriteBusId);
+
+//   try {
+//     const regexPattern =
+//       typeof searchroute === "string" ? searchroute : String(searchroute);
+    // const search = await BusRoute.findOne({
+    //   "bus_details.busName": { $regex: regexPattern, $options: "i" },
+    // }).select({
+    //   _id: 1,
+    //   "bus_details.busName": 1,
+    //   "bus_details.busNo": 1,
+    //   "driver_details.name": 1,
+    //   "route_details.route": 1,
+    //   "route_details.sourceRoute": 1,
+    //   "route_details.destinationRoute": 1,
+    //   "route_details.stops": 1,
+    //   "route_details.polyline": 1,
+    //   time: 1,
+    //   status: 1,
+    //   currentRouteLocation: 1,
+    // });
+
+    // if (!search) {
+    //   return res.status(404).json({ message: "Route not found" });
+    // }
+    // if (search._id.toString() === favoriteBusId) {
+    //   return res.status(200).json({ ...search.toObject(), isFavorite: true });
+    // }
+    // return res.status(200).json({ ...search.toObject(), isFavorite: false });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Server Error" });
+//   }
+// });
+
+//search Route
 
 userRouter.get("/api/route/:token?", authentication, async (req, res) => {
   const { searchroute } = req.query;
-  const favoriteBusId = req.favoriteBusId;
-  console.log(favoriteBusId);
+try {
+const user = await User.findOne({_id: req.id})
+const search = await BusRoute.findOne({
+  "bus_details.busName": { $regex: `${searchroute}`, $options: "i" },
+}).select({
+  _id: 1,
+  "bus_details.busName": 1,
+  "bus_details.busNo": 1,
+  "driver_details.name": 1,
+  "route_details.route": 1,
+  "route_details.sourceRoute": 1,
+  "route_details.destinationRoute": 1,
+  "route_details.stops": 1,
+  "route_details.polyline": 1,
+  time: 1,
+  status: 1,
+  currentRouteLocation: 1,
+});
+console.log(user)
+if (!search) {
+  return res.status(404).json({ message: "Route not found" });
+}
+if (search._id.toString() === user.favoriteBusId) {
+  return res.status(200).json({ ...search.toObject(), isFavorite: true });
+}
+return res.status(200).json({ ...search.toObject(), isFavorite: false });
 
-  try {
-    const regexPattern =
-      typeof searchroute === "string" ? searchroute : String(searchroute);
-    const search = await BusRoute.findOne({
-      "bus_details.busName": { $regex: regexPattern, $options: "i" },
-    }).select({
-      _id: 1,
-      "bus_details.busName": 1,
-      "bus_details.busNo": 1,
-      "driver_details.name": 1,
-      "route_details.route": 1,
-      "route_details.sourceRoute": 1,
-      "route_details.destinationRoute": 1,
-      "route_details.stops": 1,
-      "route_details.polyline": 1,
-      time: 1,
-      status: 1,
-      currentRouteLocation: 1,
-    });
-
-    if (!search) {
-      return res.status(404).json({ message: "Route not found" });
-    }
-    if (search._id.toString() === favoriteBusId) {
-      return res.status(200).json({ ...search.toObject(), isFavorite: true });
-    }
-    return res.status(200).json({ ...search.toObject(), isFavorite: false });
-  } catch (error) {
+} catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
   }

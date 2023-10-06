@@ -25,9 +25,9 @@ const userSchema = new mongoose.Schema(
     },
   //   favoriteBus:{
   // type:String,
-  //     // isFavorite:String,
+  //      isFavorite:Boolean,
   //   },
-favoriteBus:String,
+ favoriteBus:String,
   },
   { timestamps: true }
 );
