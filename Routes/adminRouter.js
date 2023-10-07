@@ -6,27 +6,15 @@ const Route = require("../Model/routeModel");
 const BusRoute = require("../Model/busRoute");
 const Country = require("../Model/countryModel");
 const City = require("../Model/CityModel");
+
+
 //drivers
-
-// Get all drivers
-// AdminRouter.get("/api/get/drivers", async (req, res) => {
-//   try {
-//     const managers = await User.find({ profileType: "Driver" }).select(
-//       "name id licenceNo dob phoneNo email"
-//     );
-//     return res.status(200).json({ managers });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ msg: "Internal server error" });
-//   }
-// });
-
 AdminRouter.get("/api/get/drivers/:isvisible", async (req, res) => {
   const isvisible = req.params.isvisible;
   try {
     if (isvisible === "true") {
       const managers = await User.find({ profileType: "Driver" }).select(
-        "name id licenceNo dob phoneNo email"
+        "name id licenceNo dob phoneNo email address"
       );
       return res.status(200).json({ managers });
     } else {
@@ -38,7 +26,7 @@ AdminRouter.get("/api/get/drivers/:isvisible", async (req, res) => {
       const managers = await User.find({
         profileType: "Driver",
         _id: { $nin: ids },
-      }).select("name id licenceNo dob phoneNo email");
+      }).select("name id licenceNo dob phoneNo email address ");
 
       return res.status(200).json({ managers });
     }
@@ -50,7 +38,6 @@ AdminRouter.get("/api/get/drivers/:isvisible", async (req, res) => {
 
 //update driver
 const bcrypt = require("bcrypt");
-
 AdminRouter.put("/api/update/driver/:id", async (req, res) => {
   const id = req.params.id;
   try {
@@ -164,17 +151,6 @@ AdminRouter.delete("/api/delete/bus/:id", async (req, res) => {
 });
 
 //get buses
-// AdminRouter.get("/api/get/buses", async (req, res) => {
-//   try {
-//     const Buses = await Bus.find();
-
-//     return res.status(200).json({ Buses });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ msg: "Internal server error" });
-//   }
-// });
-
 AdminRouter.get("/api/get/buses/:isvisible", async (req, res) => {
   const isvisible = req.params.isvisible;
   try {
@@ -561,18 +537,30 @@ AdminRouter.delete("/api/delete/country/:id", async (req, res) => {
 //citywith country
 
 //get city with country
-AdminRouter.get("/api/get/city/:country", async (req, res) => {
+AdminRouter.get("/api/get/city/:country?", async (req, res) => {
   try {
-    console.log(req.params.country)
-    const cityes = await City.find({
-      "country.countryName": req.params.country,
+    const country = req.params.country;
+    if(country){
+     const cityes = await City.find({
+      "country.countryName":country ,
     });
+
+    if (cityes.length === 0) {
+      return res.status(404).json({ msg: "NO city Found in this Country" });
+    }
+
+    return res.status(200).json(cityes);
+  }
+  else{
+    const cityes = await City.find().select("city");
 
     if (cityes.length === 0) {
       return res.status(404).json({ msg: "City not found" });
     }
 
     return res.status(200).json(cityes);
+  }
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });

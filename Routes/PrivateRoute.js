@@ -5,62 +5,7 @@ const authentication = require("../Middleware/authentication");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-//get all private vehicles and search
 
-// PrivateRouter.get(
-//   "/api/getvehicle/:token",
-
-//   async (req, res) => {
-//     try {
-//       const id = req.id;
-//       const v = await User.findOne({ _id: id, profileType: "Private" });
-
-//       if (v) {
-//         const vehicleData = {
-//           id: v.id,
-//           name: v.name,
-//           email: v.email,
-//           licenceNo: v.licenceNo,
-//           phoneNo: v.phoneNo,
-//           dob: v.dob,
-//           profileType: v.profileType,
-//           vehicleNo: v.privateVehicle.vehicleNo,
-//           status: v.privateVehicle.status,
-//           vehicletype: v.privateVehicle.vehicletype,
-//           currentLocation: v.privateVehicle.currentLocation,
-//         };
-
-//         return res.status(200).json([vehicleData]);
-//       }
-
-//       const vehicles = await User.find({ profileType: "Private" });
-
-//       if (!vehicles || vehicles.length === 0) {
-//         return res.status(404).json({ error: "No private vehicles found" });
-//       }
-
-//       // Assuming you want to return data for all found vehicles
-//       const vehicleData = vehicles.map((vehicle) => ({
-//         id: vehicle.id,
-//         name: vehicle.name,
-//         email: vehicle.email,
-//         licenceNo: vehicle.licenceNo,
-//         phoneNo: vehicle.phoneNo,
-//         dob: vehicle.dob,
-//         profileType: vehicle.profileType,
-//         vehicleNo: vehicle.privateVehicle.vehicleNo,
-//         status: vehicle.privateVehicle.status,
-//         vehicletype: vehicle.privateVehicle.vehicletype,
-//         currentLocation: vehicle.privateVehicle.currentLocation,
-//       }));
-
-//       return res.status(200).json(vehicleData);
-//     } catch (error) {
-//       console.error(error);
-//       return res.status(500).json({ msg: "Internal server error" });
-//     }
-//   }
-// );
 
 //post private vehicle
 PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
@@ -74,6 +19,7 @@ PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
       licenceNo,
       privateVehicle: { vehicleNo, vehicletype, status },
       password,
+      address
     } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -90,6 +36,7 @@ PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
         status,
         vehicletype,
       },
+      address
     });
 
     // Save the user to the database

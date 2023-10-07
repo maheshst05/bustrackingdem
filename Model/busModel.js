@@ -1,10 +1,18 @@
 const mongoose = require('mongoose');
 
 const busSchema = new mongoose.Schema({
-  busName:{type: 'string', unique:true},
-	busNo:String,
+  busNo:String,
   fuelType:String,
-  fuelCapacity:String
+  fuelCapacity:String,
+  address:{country:{
+    _id:String,
+    countryName: String,
+    countryCode:String,
+},
+_id:String,
+city: String
+}
+
 })
 const Bus = mongoose.model('Bus', busSchema);
 module.exports = Bus;

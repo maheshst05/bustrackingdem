@@ -27,11 +27,17 @@ const userSchema = new mongoose.Schema(
       RouteId: String,
         isFavorite: Boolean,
       },
+      address:{country:{
+        _id:String,
+        countryName: String,
+        countryCode:String,
+    },
+    _id:String,
+    city: String
+    }
     
-//  favoriteBus:String,
-//  isFavorite:Boolean,
-
 },
+
   { timestamps: true }
 );
 

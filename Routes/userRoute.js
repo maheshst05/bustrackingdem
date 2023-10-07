@@ -10,7 +10,8 @@ const BusRoute = require("../Model/busRoute");
 
 userRouter.post("/api/auth/register", async (req, res) => {
   try {
-    const { name, email, password, dob, phoneNo, age, profileType, licenceNo } =
+    const { name, email, password, dob, phoneNo, age, profileType, licenceNo,  address
+   } =
       req.body;
 
     const phoneNoCheck = await User.findOne({ phoneNo });
@@ -35,6 +36,7 @@ userRouter.post("/api/auth/register", async (req, res) => {
       profileType,
       licenceNo,
       password: hashedPassword,
+      address
     });
 
     return res.status(200).json({ status: true, user });
