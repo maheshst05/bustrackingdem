@@ -552,7 +552,7 @@ AdminRouter.get("/api/get/city/:country?", async (req, res) => {
     return res.status(200).json(cityes);
   }
   else{
-    const cityes = await City.find().select("city");
+    const cityes = await City.find();
 
     if (cityes.length === 0) {
       return res.status(404).json({ msg: "City not found" });
