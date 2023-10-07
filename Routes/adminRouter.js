@@ -5,6 +5,7 @@ const Bus = require("../Model/busModel");
 const Route = require("../Model/routeModel");
 const BusRoute = require("../Model/busRoute");
 const Country = require("../Model/countryModel");
+const City = require("../Model/CityModel");
 //drivers
 
 // Get all drivers
@@ -181,12 +182,12 @@ AdminRouter.get("/api/get/buses/:isvisible", async (req, res) => {
       const Buses = await Bus.find();
       return res.status(200).json({ Buses });
     } else {
-      const assignedBuses = await BusRoute.find().select("bus_details._id")
+      const assignedBuses = await BusRoute.find().select("bus_details._id");
       const ids = assignedBuses.map((item) => item.bus_details._id);
       // res.send(ids)
       const Buses = await Bus.find({
         _id: { $nin: ids },
-      })
+      });
 
       return res.status(200).json({ Buses });
     }
@@ -529,8 +530,8 @@ AdminRouter.post("/api/post/country/", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
-//update country
 
+//update country
 AdminRouter.put("/api/update/country/:id", async (req, res) => {
   try {
     const country = await Country.findByIdAndUpdate(req.params.id, req.body);
@@ -540,7 +541,7 @@ AdminRouter.put("/api/update/country/:id", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
-
+//delete country
 AdminRouter.delete("/api/delete/country/:id", async (req, res) => {
   try {
     const countryId = req.params.id;
@@ -551,6 +552,69 @@ AdminRouter.delete("/api/delete/country/:id", async (req, res) => {
     }
 
     return res.status(200).json({ msg: "Country deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+});
+
+//citywith country
+
+//get city with country
+AdminRouter.get("/api/get/city/:country", async (req, res) => {
+  try {
+    console.log(req.params.country)
+    const cityes = await City.find({
+      "country.countryName": req.params.country,
+    });
+
+    if (cityes.length === 0) {
+      return res.status(404).json({ msg: "City not found" });
+    }
+
+    return res.status(200).json(cityes);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+});
+
+
+//post city with country
+
+AdminRouter.post("/api/post/city", async (req, res) => {
+  try {
+    const citys= new City(req.body);
+    await citys.save();
+    return res.status(200).json({ msg: "New city added successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+});
+
+//update city with country
+AdminRouter.put("/api/update/city/:id", async (req, res) => {
+  try {
+  const city = await City.findByIdAndUpdate(req.params.id, req.body)
+  return res.status(200).json({ msg: "City updated successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+})
+
+//delete city with country
+AdminRouter.delete("/api/delete/city/:id", async (req, res) => {
+  try {
+    const countryId = req.params.id;
+    const deletedCountry = await City.findByIdAndRemove(countryId);
+
+    if (!deletedCountry) {
+      return res.status(404).json({ msg: "City not found" });
+    }
+
+    return res.status(200).json({ msg: "City deleted successfully" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
