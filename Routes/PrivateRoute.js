@@ -162,6 +162,8 @@ PrivateRouter.get(
       const live_vehicles = await User.find({
         "privateVehicle.status": "START",
       });
+     // const live_vehicles = await User.find({profileType:"Private"});
+      
       res.status(200).json(live_vehicles);
     } catch (error) {
       console.error(error);
