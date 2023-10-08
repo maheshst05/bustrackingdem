@@ -103,15 +103,7 @@ AdminRouter.delete("/api/delete/driver/:id", async (req, res) => {
 //Bus
 // Add a new bus
 AdminRouter.post("/api/add/bus", async (req, res) => {
-  const { busName } = req.body;
   try {
-    // const busNameCheck = await Bus.findOne({ busName });
-    // if (busNameCheck) {
-    //   return res
-    //     .status(400)
-    //     .json({ msg: "Route is already Presemt", status: false });
-    // }
-
     const newBus = new Bus(req.body);
     await newBus.save();
 
