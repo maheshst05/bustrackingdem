@@ -10,26 +10,41 @@ const City = require("../Model/CityModel");
 
 //drivers
 AdminRouter.get("/api/get/drivers/:isvisible", async (req, res) => {
-  const isvisible = req.params.isvisible;
   try {
+    const { isvisible } = req.params;
+    const search = req.query.search;
+
+    const filter = {
+      profileType: "Driver",
+    };
+
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { "address.country.countryName": { $regex: search, $options: "i" } },
+        { "address.city": { $regex: search, $options: "i" } },
+      ];
+    }
+
+    let managers;
+
     if (isvisible === "true") {
-      const managers = await User.find({ profileType: "Driver" }).select(
-        "name id licenceNo dob phoneNo email address"
-      );
-      return res.status(200).json({ managers });
+      managers = await User.find(filter)
+        .select("name id licenceNo dob phoneNo email address")
+        .lean();
     } else {
-      const isAssignedDriver = await BusRoute.find().select(
+      const isAssignedDriverIds = await BusRoute.distinct(
         "driver_details._id"
       );
-      const ids = isAssignedDriver.map((item) => item.driver_details._id);
 
-      const managers = await User.find({
-        profileType: "Driver",
-        _id: { $nin: ids },
-      }).select("name id licenceNo dob phoneNo email address ");
+      filter._id = { $nin: isAssignedDriverIds };
 
-      return res.status(200).json({ managers });
+      managers = await User.find(filter)
+        .select("name id licenceNo dob phoneNo email address")
+        .lean();
     }
+
+    return res.status(200).json({ managers });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
@@ -122,7 +137,7 @@ AdminRouter.put("/api/update/bus/:id", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
-
+//delete bus
 AdminRouter.delete("/api/delete/bus/:id", async (req, res) => {
   const id = req.params.id;
   try {
@@ -152,26 +167,40 @@ AdminRouter.delete("/api/delete/bus/:id", async (req, res) => {
 
 //get buses
 AdminRouter.get("/api/get/buses/:isvisible", async (req, res) => {
-  const isvisible = req.params.isvisible;
+  const { isvisible } = req.params;
+  const search = req.query.search;
   try {
+    let filter = {};
+    if (search) {
+      filter = {
+        $or: [
+          { busNo: { $regex: search, $options: "i" } },
+          { "address.country.countryName": { $regex: search, $options: "i" } },
+          { "address.city": { $regex: search, $options: "i" } },
+        ],
+      };
+    }
+
+    let Buses;
+
     if (isvisible === "true") {
-      const Buses = await Bus.find();
-      return res.status(200).json({ Buses });
+      Buses = await Bus.find(filter);
     } else {
       const assignedBuses = await BusRoute.find().select("bus_details._id");
       const ids = assignedBuses.map((item) => item.bus_details._id);
-      // res.send(ids)
-      const Buses = await Bus.find({
-        _id: { $nin: ids },
-      });
-
-      return res.status(200).json({ Buses });
+      Buses = await Bus.find({ _id: { $nin: ids }, ...filter });
     }
+
+    return res.status(200).json({ Buses });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
+
+
+
+
 
 //Route
 //add routes
@@ -215,6 +244,21 @@ AdminRouter.delete("/api/delete/route/:id", async (req, res) => {
 //get routes
 AdminRouter.get("/api/get/routes", async (req, res) => {
   try {
+    const search  =req.query.search
+    const filter = {
+      
+    };
+
+    if (search) {
+      filter.$or = [
+        { routeNo: { $regex: search, $options: "i" } },
+        { route: { $regex: search, $options: "i" } },
+        { "address.country.countryName": { $regex: search, $options: "i" } },
+        { "address.city": { $regex: search, $options: "i" } },
+      ];
+      const routes = await Route.find(filter);
+      return res.status(200).json({ routes });
+    }
     const routes = await Route.find();
     return res.status(200).json({ routes });
   } catch (error) {

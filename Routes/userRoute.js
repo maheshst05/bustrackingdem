@@ -377,4 +377,36 @@ userRouter.get("/api/route/:token?", authentication, async (req, res) => {
   }
 });
 
+userRouter.put('/api/resetpassword', async (req, res) => {
+  const { phoneNo, oldpassword, newpassword } = req.body;
+  try {
+    const user = await User.findOne({ phoneNo });
+    if (!user) {
+      return res
+        .status(401)
+        .json({ msg: "Phone number does not exist", status: false });
+    }
+
+    // Compare passwords
+    const passwordMatch = await bcrypt.compare(oldpassword, user.password);
+    if (!passwordMatch) {
+      return res
+        .status(401)
+        .json({ msg: "Old password does not match", status: false });
+    }
+
+    // Hash and update the new password
+    const newPasswordHash = await bcrypt.hash(newpassword, 10);
+    user.password = newPasswordHash;
+    await user.save();
+
+    return res.status(200).json({ msg: "Password reset successful", status: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Server error", status: false });
+  }
+});
+
+
+
 module.exports = userRouter;

@@ -28,7 +28,7 @@ PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
       dob,
       phoneNo,
       email,
-      password: hashedPassword, // Save the hashed password
+      password: hashedPassword, 
       licenceNo,
       profileType,
       privateVehicle: {
@@ -202,17 +202,23 @@ PrivateRouter.put("/api/update/location/:token/:id", async (req, res) => {
 //search private and get all
 PrivateRouter.get(
   "/api/getvehicle/:token",
-  authentication,
+  // authentication,
   async (req, res) => {
     try {
       const { search } = req.query;
-
+      const filter = {
+        profileType: "Private",
+      };
       // Find private vehicles based on search criteria if provided
       if (search) {
-        const vehicles = await User.find({
-          profileType: "Private",
-          "privateVehicle.vehicletype": { $regex: search, $options: "i" },
-        });
+
+        filter.$or = [
+          { name: { $regex: search, $options: "i" } },
+          { "address.country.countryName": { $regex: search, $options: "i" } },
+          { "address.city": { $regex: search, $options: "i" } },
+         {"privateVehicle.vehicletype": { $regex: search, $options: "i" }}
+        ];
+        const vehicles = await User.find(filter);
 
         if (vehicles.length === 0) {
           return res.status(404).json({ error: "No results found" });
@@ -264,6 +270,7 @@ function mapUserToVehicleData(user) {
     status: user.privateVehicle.status,
     vehicletype: user.privateVehicle.vehicletype,
     currentLocation: user.privateVehicle.currentLocation,
+    address: user.address
   };
 }
 
