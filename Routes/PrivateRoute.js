@@ -125,9 +125,9 @@ PrivateRouter.get("/get/live/location/:token/:id", async (req, res) => {
 //update private vehicle currentlocation
 PrivateRouter.put(
   "/api/update/live/location/:token/:id",
-  authentication,
+  // authentication,
   async (req, res) => {
-    const { currentLocation, vehicleNo } = req.body;
+    const { currentLocation, vehicleNo,vehicletype } = req.body;
     const { id } = req.params;
     try {
       const vehicle = await User.findById(id);
@@ -140,6 +140,7 @@ PrivateRouter.put(
 
       vehicle.privateVehicle.currentLocation = currentLocation;
       vehicle.privateVehicle.vehicleNo = vehicleNo;
+      vehicle.privateVehicle.vehicletype=vehicletype
       // Save the updated vehicle information
       await vehicle.save();
 
@@ -202,7 +203,7 @@ PrivateRouter.put("/api/update/location/:token/:id", async (req, res) => {
 //search private and get all
 PrivateRouter.get(
   "/api/getvehicle/:token",
-  // authentication,
+   authentication,
   async (req, res) => {
     try {
       const { search } = req.query;
