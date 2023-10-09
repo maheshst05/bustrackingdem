@@ -207,6 +207,7 @@ userRouter.get("/api/get-bus/:token?", async (req, res) => {
       "driver_details.licenceNo": 1,
       "driver_details.phoneNo": 1,
       "driver_details.email": 1,
+      "route_details.routeNo": 1,
       "route_details.route": 1,
       "route_details.sourceRoute": 1,
       "route_details.destinationRoute": 1,
