@@ -329,6 +329,7 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
       "bus_details.busNo": 1,
       "driver_details.name": 1,
       "route_details.route": 1,
+      "route_details.routeNo": 1,
       "route_details.sourceRoute": 1,
       "route_details.destinationRoute": 1,
       "route_details.stops": 1,
