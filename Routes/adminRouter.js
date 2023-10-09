@@ -9,10 +9,10 @@ const City = require("../Model/CityModel");
 
 
 //drivers
-AdminRouter.get("/api/get/drivers/?isvisible", async (req, res) => {
+AdminRouter.get("/api/get/drivers/", async (req, res) => {
   try {
     // const { isvisible } = req.params;
-    const { isvisible } = req.query.isvisible;
+    const  isvisible  = req.query.isvisible;
     const search = req.query.search;
 
     const filter = {
@@ -159,8 +159,8 @@ AdminRouter.delete("/api/delete/bus/:id", async (req, res) => {
 });
 
 //get buses
-AdminRouter.get("/api/get/buses/:isvisible", async (req, res) => {
-  const { isvisible } = req.query.isvisible;
+AdminRouter.get("/api/get/buses/", async (req, res) => {
+  const  isvisible  = req.query.isvisible;
   const search = req.query.search;
   try {
     let filter = {};
