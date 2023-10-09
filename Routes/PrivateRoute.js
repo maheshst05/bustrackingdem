@@ -5,8 +5,6 @@ const authentication = require("../Middleware/authentication");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-
-
 //post private vehicle
 PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
   try {

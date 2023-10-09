@@ -11,6 +11,7 @@ const busRouteSchema = new mongoose.Schema({
   },
   route_details: {
     _id: String,
+    routeNo: String,
     route: String,
     sourceRoute: {
       latitude: Number,

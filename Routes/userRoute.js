@@ -345,7 +345,7 @@ userRouter.get("/api/route/:token?", authentication, async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.id });
     const search = await BusRoute.findOne({
-      "bus_details.busName": { $regex: `${searchroute}`, $options: "i" },
+      "route_details.routeNo": { $regex: `${searchroute}`, $options: "i" },
     }).select({
       _id: 1,
       "bus_details.busName": 1,
