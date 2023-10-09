@@ -182,7 +182,7 @@ userRouter.get("/api/get-bus/:token?", async (req, res) => {
 
       filter = {
         $or: [
-          { "bus_details.busName": { $regex: search, $options: "i" } },
+          { "route_details.routeNo": { $regex: search, $options: "i" } },
           { "route_details.route": { $regex: search, $options: "i" } },
         ],
       };
