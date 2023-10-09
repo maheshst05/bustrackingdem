@@ -97,7 +97,7 @@ driverRouter.get(
         route_details: {
           sourceRoute: bus.route_details.sourceRoute,
           destinationRoute: bus.route_details.destinationRoute,
-          route: bus.route_details.routeNo,
+          routeNo: bus.route_details.routeNo,
           route: bus.route_details.route,
           stops: bus.route_details.stops,
           polyline: bus.route_details.polyline,
