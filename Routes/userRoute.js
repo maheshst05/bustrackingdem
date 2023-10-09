@@ -359,6 +359,7 @@ userRouter.get("/api/route/:token?", authentication, async (req, res) => {
       "route_details.destinationRoute": 1,
       "route_details.stops": 1,
       "route_details.polyline": 1,
+      
       time: 1,
       status: 1,
       currentRouteLocation: 1,
