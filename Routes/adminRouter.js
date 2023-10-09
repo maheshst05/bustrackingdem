@@ -9,7 +9,7 @@ const City = require("../Model/CityModel");
 
 
 //drivers
-AdminRouter.get("/api/get/drivers/:isvisible", async (req, res) => {
+AdminRouter.get("/api/get/drivers/?isvisible", async (req, res) => {
   try {
     // const { isvisible } = req.params;
     const { isvisible } = req.query.isvisible;
