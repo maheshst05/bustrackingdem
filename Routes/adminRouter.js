@@ -402,7 +402,7 @@ AdminRouter.get("/api/get/manager/:token", async (req, res) => {
     }
 
     const managers = await User.find(query).select(
-      "name id licenceNo dob phoneNo email calling"
+      "name id licenceNo dob phoneNo email calling address"
     );
 
     if (managers.length === 0) {

@@ -203,7 +203,7 @@ PrivateRouter.put("/api/update/location/:token/:id", async (req, res) => {
 //search private and get all
 PrivateRouter.get(
   "/api/getvehicle/:token",
-    // authentication,
+    authentication,
   async (req, res) => {
     try {
       const { search } = req.query;
