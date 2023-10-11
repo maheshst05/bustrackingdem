@@ -10,8 +10,8 @@ const BusRoute = require("../Model/busRoute");
 
 userRouter.post("/api/auth/register", async (req, res) => {
   try {
-    const { name, email, password, dob, phoneNo, age, profileType, licenceNo,  address
-   } =
+    const { name, email, password, dob, phoneNo, age, profileType, licenceNo,  address,
+  calling } =
       req.body;
 
     const phoneNoCheck = await User.findOne({ phoneNo });
@@ -36,7 +36,8 @@ userRouter.post("/api/auth/register", async (req, res) => {
       profileType,
       licenceNo,
       password: hashedPassword,
-      address
+      address,
+      calling
     });
 
     return res.status(200).json({ status: true, user });
@@ -48,36 +49,30 @@ userRouter.post("/api/auth/register", async (req, res) => {
 
 userRouter.post("/api/auth/login/:token?", async (req, res) => {
   try {
-    const { phoneNo, password, grant_type } = req.body;
+    const { calling ,phoneNo, password, grant_type } = req.body;
 
     let accessToken = req.params.token || null;
-
-    // Check if the grant_type is "password" or if the token is expired
-    if (grant_type === "password" || accessToken === null) {
-      // Generate a new token for the same user
-      const user = await User.findOne({ phoneNo });
+   if (grant_type === "password" || accessToken === null) {
+    
+      const user = await User.findOne({ phoneNo, calling });
       if (!user) {
         return res
           .status(401)
           .json({ msg: "Invalid credentials", status: false });
       }
-
-      // Compare passwords
-      const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
         return res
           .status(401)
           .json({ msg: "Invalid credentials", status: false });
       }
-
-      const newAccessToken = jwt.sign(
+     const newAccessToken = jwt.sign(
         { userId: user._id, user: user },
         process.env.JWT_SECRET,
         {
           expiresIn: "1d",
         }
       );
-
       return res.status(200).json({
         msg: "Login successfully",
         status: true,
@@ -359,7 +354,6 @@ userRouter.get("/api/route/:token?", authentication, async (req, res) => {
       "route_details.destinationRoute": 1,
       "route_details.stops": 1,
       "route_details.polyline": 1,
-      
       time: 1,
       status: 1,
       currentRouteLocation: 1,

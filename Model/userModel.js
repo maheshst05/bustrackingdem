@@ -5,6 +5,10 @@ const userSchema = new mongoose.Schema(
     name: String,
     dob: Date,
     phoneNo: Number,
+    calling : {
+      callingCode :String,
+      countryCode : String
+      },
     email: String,
     password: String,
     licenceNo: String,

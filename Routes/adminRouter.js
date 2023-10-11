@@ -6,7 +6,7 @@ const Route = require("../Model/routeModel");
 const BusRoute = require("../Model/busRoute");
 const Country = require("../Model/countryModel");
 const City = require("../Model/CityModel");
-
+const bcrypt = require("bcrypt");
 
 //drivers
 AdminRouter.get("/api/get/drivers/", async (req, res) => {
@@ -53,7 +53,6 @@ AdminRouter.get("/api/get/drivers/", async (req, res) => {
 });
 
 //update driver
-const bcrypt = require("bcrypt");
 AdminRouter.put("/api/update/driver/:id", async (req, res) => {
   const id = req.params.id;
   try {
@@ -67,7 +66,7 @@ AdminRouter.put("/api/update/driver/:id", async (req, res) => {
     const driver = await User.findByIdAndUpdate(
       { _id: id },
       req.body,
-      { new: true } // This option returns the updated document
+      { new: true } 
     );
 
     if (!driver) {
@@ -392,7 +391,7 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
 });
 
 //manager
-//delete manager
+
 
 //get all and search Manager
 AdminRouter.get("/api/get/manager/:token", async (req, res) => {
