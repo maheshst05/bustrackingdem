@@ -9,9 +9,53 @@ const City = require("../Model/CityModel");
 const bcrypt = require("bcrypt");
 
 //drivers
-AdminRouter.get("/api/get/drivers/", async (req, res) => {
+// AdminRouter.get("/api/get/drivers/:city", async (req, res) => {
+//   try {
+//      const city = req.params.city;
+//     const  isvisible  = req.query.isvisible;
+//     const search = req.query.search;
+
+//     const filter = {
+//       profileType: "Driver",
+//     };
+
+//     if (search) {
+//       filter.$or = [
+//         { name: { $regex: search, $options: "i" } },
+//         { "address.country.countryName": { $regex: search, $options: "i" } },
+//         { "address.city": { $regex: search, $options: "i" } },
+//       ];
+//     }
+
+//     let managers;
+
+//     if (isvisible === "true") {
+//       managers = await User.find(filter)
+//         .select("name id licenceNo dob phoneNo email address calling")
+//         .lean();
+//     } else {
+//       const isAssignedDriverIds = await BusRoute.distinct(
+//          "driver_details._id"
+//     );
+
+//       filter._id = { $nin: isAssignedDriverIds };
+
+//       managers = await User.find(filter)
+//         .select("name id licenceNo dob phoneNo email address calling")
+//         .lean();
+//     }
+
+//     return res.status(200).json({ managers });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
+
+
+AdminRouter.get("/api/get/drivers/:city", async (req, res) => {
   try {
-    // const { isvisible } = req.params;
+     const city = req.params.city;
     const  isvisible  = req.query.isvisible;
     const search = req.query.search;
 
@@ -35,12 +79,12 @@ AdminRouter.get("/api/get/drivers/", async (req, res) => {
         .lean();
     } else {
       const isAssignedDriverIds = await BusRoute.distinct(
-        "driver_details._id"
-      );
+         "driver_details._id"
+    );
 
       filter._id = { $nin: isAssignedDriverIds };
 
-      managers = await User.find(filter)
+      managers = await User.find({filter,"address._id":city})
         .select("name id licenceNo dob phoneNo email address calling")
         .lean();
     }
@@ -51,6 +95,7 @@ AdminRouter.get("/api/get/drivers/", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
+
 
 //update driver
 AdminRouter.put("/api/update/driver/:id", async (req, res) => {

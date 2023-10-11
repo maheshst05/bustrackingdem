@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "User",
     },
+    whoisUpdate:{
+      type: "string", 
+      default: "User",
+    },
     privateVehicle: {
       vehicleNo: String,
       status:{type: String, default:'STOP'},
