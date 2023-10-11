@@ -31,7 +31,7 @@ AdminRouter.get("/api/get/drivers/", async (req, res) => {
 
     if (isvisible === "true") {
       managers = await User.find(filter)
-        .select("name id licenceNo dob phoneNo email address")
+        .select("name id licenceNo dob phoneNo email address calling")
         .lean();
     } else {
       const isAssignedDriverIds = await BusRoute.distinct(
@@ -41,7 +41,7 @@ AdminRouter.get("/api/get/drivers/", async (req, res) => {
       filter._id = { $nin: isAssignedDriverIds };
 
       managers = await User.find(filter)
-        .select("name id licenceNo dob phoneNo email address")
+        .select("name id licenceNo dob phoneNo email address calling")
         .lean();
     }
 
@@ -391,8 +391,6 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
 });
 
 //manager
-
-
 //get all and search Manager
 AdminRouter.get("/api/get/manager/:token", async (req, res) => {
   try {
@@ -404,7 +402,7 @@ AdminRouter.get("/api/get/manager/:token", async (req, res) => {
     }
 
     const managers = await User.find(query).select(
-      "name id licenceNo dob phoneNo email"
+      "name id licenceNo dob phoneNo email calling"
     );
 
     if (managers.length === 0) {

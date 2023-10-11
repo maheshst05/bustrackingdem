@@ -17,7 +17,8 @@ PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
       licenceNo,
       privateVehicle: { vehicleNo, vehicletype, status },
       password,
-      address
+      address,
+      calling
     } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -34,7 +35,8 @@ PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
         status,
         vehicletype,
       },
-      address
+      address,
+      calling
     });
 
     // Save the user to the database
@@ -51,7 +53,7 @@ PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
 
 PrivateRouter.put(
   "/api/updatevehicle/:token/:id",
-  authentication,
+   authentication,
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -79,7 +81,7 @@ PrivateRouter.put(
 //delete vehicle
 PrivateRouter.delete(
   "/api/deletevehicle/:token/:id",
-  authentication,
+  //authentication,
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -123,7 +125,7 @@ PrivateRouter.get("/get/live/location/:token/:id", async (req, res) => {
 //update private vehicle currentlocation
 PrivateRouter.put(
   "/api/update/live/location/:token/:id",
-  // authentication,
+   authentication,
   async (req, res) => {
     const { currentLocation, vehicleNo,vehicletype } = req.body;
     const { id } = req.params;
@@ -201,7 +203,7 @@ PrivateRouter.put("/api/update/location/:token/:id", async (req, res) => {
 //search private and get all
 PrivateRouter.get(
   "/api/getvehicle/:token",
-   authentication,
+    // authentication,
   async (req, res) => {
     try {
       const { search } = req.query;
@@ -269,7 +271,8 @@ function mapUserToVehicleData(user) {
     status: user.privateVehicle.status,
     vehicletype: user.privateVehicle.vehicletype,
     currentLocation: user.privateVehicle.currentLocation,
-    address: user.address
+    address: user.address,
+    calling:user.calling
   };
 }
 

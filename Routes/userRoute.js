@@ -54,12 +54,19 @@ userRouter.post("/api/auth/login/:token?", async (req, res) => {
     let accessToken = req.params.token || null;
    if (grant_type === "password" || accessToken === null) {
     
-      const user = await User.findOne({ phoneNo, calling });
+      const user = await User.findOne({ phoneNo});
       if (!user) {
         return res
           .status(401)
           .json({ msg: "Invalid credentials", status: false });
       }
+      const userCountrycode = await User.findOne({ calling});
+      if(!userCountrycode){
+        return res
+        .status(401)
+        .json({ msg: "Unauthorized country code", status: false });
+      }
+
     const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
         return res
@@ -131,6 +138,7 @@ userRouter.post("/api/auth/login/:token?", async (req, res) => {
     return res.status(500).json({ msg: "An error occurred", status: false });
   }
 });
+
 
 userRouter.post(
   "/api/auth/logout/:token?",
