@@ -57,6 +57,15 @@ const busRouteSchema = new mongoose.Schema({
     latitudeDelta: Number,
     longitudeDelta: Number,
   },
+  address:{country:{
+    _id:String,
+    countryName: String,
+    countryCode:String,
+},
+_id:String,
+city: String
+},
+
   heading: Number,
 });
 
