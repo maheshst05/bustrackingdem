@@ -198,6 +198,41 @@ AdminRouter.delete("/api/delete/bus/:id", async (req, res) => {
 });
 
 //get buses
+// AdminRouter.get("/api/get/buses/", async (req, res) => {
+//   const city = req.params.city
+//   const  isvisible  = req.query.isvisible;
+//   const search = req.query.search;
+//   try {
+//     let filter = {};
+//     if (search) {
+//       filter = {
+//         $or: [
+//           { busNo: { $regex: search, $options: "i" } },
+//           { "address.country.countryName": { $regex: search, $options: "i" } },
+//           { "address.city": { $regex: search, $options: "i" } },
+//         ],
+//       };
+//     }
+
+//     let Buses;
+
+//     if (isvisible === "true") {
+//       Buses = await Bus.find(filter);
+//     } else {
+//       const assignedBuses = await BusRoute.find().select("bus_details._id");
+//       const ids = assignedBuses.map((item) => item.bus_details._id);
+//       Buses = await Bus.find({ _id: { $nin: ids }, ...filter });
+//     }
+
+//     return res.status(200).json({ Buses });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
+
+
+
 AdminRouter.get("/api/get/buses/:city?", async (req, res) => {
   const city = req.params.city
   const  isvisible  = req.query.isvisible;
@@ -221,7 +256,14 @@ AdminRouter.get("/api/get/buses/:city?", async (req, res) => {
     } else {
       const assignedBuses = await BusRoute.find().select("bus_details._id");
       const ids = assignedBuses.map((item) => item.bus_details._id);
-      Buses = await Bus.find({ _id: { $nin: ids }, ...filter });
+      
+Buses = await Bus.find({
+  $and: [
+    { _id: { $nin: ids } },
+    { "address._id": city },
+    filter,
+  ],
+});
     }
 
     return res.status(200).json({ Buses });
@@ -230,6 +272,8 @@ AdminRouter.get("/api/get/buses/:city?", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
+
+
 
 
 
