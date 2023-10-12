@@ -421,11 +421,14 @@ AdminRouter.put("/api/update/manager/:token/:id", async (req, res) => {
   const id = req.params.id;
   try {
     if (req.body.password) {
-      // Hash the new password
+      
       req.body.password = await bcrypt.hash(req.body.password, 10);
     }
 
-    // Update the user document
+    if (!req.body.password) {
+      delete req.body.whoisUpdate;
+    }
+    
     const manager = await User.findByIdAndUpdate(
       { _id: id },
       req.body,

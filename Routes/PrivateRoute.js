@@ -18,7 +18,7 @@ PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
       privateVehicle: { vehicleNo, vehicletype, status },
       password,
       address,
-      calling
+      calling,
     } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -27,7 +27,7 @@ PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
       dob,
       phoneNo,
       email,
-      password: hashedPassword, 
+      password: hashedPassword,
       licenceNo,
       profileType,
       privateVehicle: {
@@ -36,7 +36,7 @@ PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
         vehicletype,
       },
       address,
-      calling
+      calling,
     });
 
     // Save the user to the database
@@ -49,17 +49,20 @@ PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
     res.status(500).json({ error: "Registration failed" });
   }
 });
-// const bcrypt = require('bcrypt'); // Import the bcrypt library
 
+//update private vehicle
 PrivateRouter.put(
   "/api/updatevehicle/:token/:id",
-   authentication,
+  authentication,
   async (req, res) => {
     try {
       const { id } = req.params;
       if (req.body.password) {
         // Hash the new password
         req.body.password = await bcrypt.hash(req.body.password, 10);
+      }
+      if (!req.body.password) {
+        delete req.body.whoisUpdate;
       }
 
       const user = await User.findByIdAndUpdate({ _id: id }, req.body);
@@ -125,9 +128,9 @@ PrivateRouter.get("/get/live/location/:token/:id", async (req, res) => {
 //update private vehicle currentlocation
 PrivateRouter.put(
   "/api/update/live/location/:token/:id",
-   authentication,
+  authentication,
   async (req, res) => {
-    const { currentLocation, vehicleNo,vehicletype } = req.body;
+    const { currentLocation, vehicleNo, vehicletype } = req.body;
     const { id } = req.params;
     try {
       const vehicle = await User.findById(id);
@@ -140,7 +143,7 @@ PrivateRouter.put(
 
       vehicle.privateVehicle.currentLocation = currentLocation;
       vehicle.privateVehicle.vehicleNo = vehicleNo;
-      vehicle.privateVehicle.vehicletype=vehicletype
+      vehicle.privateVehicle.vehicletype = vehicletype;
       // Save the updated vehicle information
       await vehicle.save();
 
@@ -163,8 +166,8 @@ PrivateRouter.get(
       const live_vehicles = await User.find({
         "privateVehicle.status": "START",
       });
-     // const live_vehicles = await User.find({profileType:"Private"});
-      
+      // const live_vehicles = await User.find({profileType:"Private"});
+
       res.status(200).json(live_vehicles);
     } catch (error) {
       console.error(error);
@@ -203,7 +206,7 @@ PrivateRouter.put("/api/update/location/:token/:id", async (req, res) => {
 //search private and get all
 PrivateRouter.get(
   "/api/getvehicle/:token",
-    authentication,
+  authentication,
   async (req, res) => {
     try {
       const { search } = req.query;
@@ -212,12 +215,11 @@ PrivateRouter.get(
       };
       // Find private vehicles based on search criteria if provided
       if (search) {
-
         filter.$or = [
           { name: { $regex: search, $options: "i" } },
           { "address.country.countryName": { $regex: search, $options: "i" } },
           { "address.city": { $regex: search, $options: "i" } },
-         {"privateVehicle.vehicletype": { $regex: search, $options: "i" }}
+          { "privateVehicle.vehicletype": { $regex: search, $options: "i" } },
         ];
         const vehicles = await User.find(filter);
 
@@ -272,7 +274,7 @@ function mapUserToVehicleData(user) {
     vehicletype: user.privateVehicle.vehicletype,
     currentLocation: user.privateVehicle.currentLocation,
     address: user.address,
-    calling:user.calling
+    calling: user.calling,
   };
 }
 
