@@ -11,7 +11,7 @@ const BusRoute = require("../Model/busRoute");
 userRouter.post("/api/auth/register", async (req, res) => {
   try {
     const { name, email, password, dob, phoneNo, age, profileType, licenceNo,  address,
-  calling } =
+  calling ,whoisUpdate } =
       req.body;
 
     const phoneNoCheck = await User.findOne({ phoneNo });
@@ -37,7 +37,8 @@ userRouter.post("/api/auth/register", async (req, res) => {
       licenceNo,
       password: hashedPassword,
       address,
-      calling
+      calling,
+      whoisUpdate
     });
 
     return res.status(200).json({ status: true, user });
@@ -168,9 +169,8 @@ userRouter.post(
     }
   }
 );
-
+//here changes *********************** (currentRouteLocation)
 //get all buses
-
 userRouter.get("/api/get-bus/:token?", async (req, res) => {
   const { search } = req.query || {};
   const profiletype = req.ProfileType;
@@ -227,9 +227,7 @@ userRouter.get("/api/get-bus/:token?", async (req, res) => {
         },
       },
     };
-
     const busRoutes = await BusRoute.find(filter, projection);
-
     if (busRoutes.length === 0) {
       return res.status(404).json({ error: "No results found" });
     }

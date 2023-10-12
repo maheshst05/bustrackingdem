@@ -44,7 +44,7 @@ liveRouter.put("/api/update/bus/:id", async (req, res) => {
 
 
 
-//get location bus by iduser
+//get location bus by id user
 liveRouter.get("/api/live-location/bus/:id", async (req, res) => {
   const id = req.params.id;
 

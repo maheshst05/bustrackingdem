@@ -19,6 +19,7 @@ PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
       password,
       address,
       calling,
+      whoisUpdate
     } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -37,6 +38,7 @@ PrivateRouter.post("/api/register/privatevehicle/:token", async (req, res) => {
       },
       address,
       calling,
+      whoisUpdate
     });
 
     // Save the user to the database

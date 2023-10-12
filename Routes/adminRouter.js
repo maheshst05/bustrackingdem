@@ -312,6 +312,86 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
   }
 });
 
+//search routes by sourceRoute, destinationRoute 
+// AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
+//   const { sourceRoute, destinationRoute } = req.query;
+
+//   if (!sourceRoute || !destinationRoute) {
+//     return res
+//       .status(400)
+//       .json({ msg: "Both sourceRoute and destinationRoute are required" });
+//   }
+
+//   try {
+//     const commonProjection = {
+//       _id: 1,
+//       "bus_details.busName": 1,
+//       "bus_details.busNo": 1,
+//       "driver_details.name": 1,
+//       "route_details.routeNo": 1,
+//       "route_details.route": 1,
+//       "route_details.sourceRoute": 1,
+//       "route_details.destinationRoute": 1,
+//       "route_details.stops": 1,
+//       "route_details.polyline": 1,
+//       address: 1,
+//       time: 1,
+//       status: 1,
+//       currentRouteLocation: 1,
+//     };
+
+//     const sourceQuery = {
+//       "route_details.polyline.name": { $regex: sourceRoute, $options: "i" },
+//     };
+
+//     const destinationQuery = {
+//       "route_details.polyline.name": {
+//         $regex: destinationRoute,
+//         $options: "i",
+//       },
+//     };
+
+//     const source = await BusRoute.find(sourceQuery).select(commonProjection);
+//     const destination = await BusRoute.find(destinationQuery).select(
+//       commonProjection
+//     );
+
+//     const response = {};
+
+//     if (source.length > 0 && destination.length > 0) {
+//       const mergedRoutes = source.concat(destination);
+//       const uniqueRoutes = Array.from(
+//         new Set(mergedRoutes.map((route) => route.bus_details.busNo))
+//       ).map((busNo) =>
+//         mergedRoutes.find((route) => route.bus_details.busNo === busNo)
+//       );
+
+//       response.message = "Successfully found";
+//       response.routes = uniqueRoutes;
+//     } else if (source.length > 0 && destination.length === 0) {
+//       response.message =
+//         "Destination does not match with your destination input";
+//       response.routes = source;
+//     } else if (source.length === 0 && destination.length > 0) {
+//       response.message = "Source does not match with your source input";
+//       response.routes = destination;
+//     } else {
+//       response.message = "No result found";
+//       response.routes = [];
+//     }
+
+//     if (response.routes.length > 0) {
+//       res.send(response);
+//     } else {
+//       res.status(404).json({ msg: "No results found" });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ msg: "Internal server error" });
+//   }
+// });
+
+
 AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
   const { sourceRoute, destinationRoute } = req.query;
 
@@ -389,6 +469,9 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
+
+
+
 
 //manager
 //get all and search Manager
