@@ -383,7 +383,7 @@ userRouter.get("/api/route/:token?", authentication, async (req, res) => {
 });
 
 userRouter.put('/api/resetpassword', async (req, res) => {
-  const { phoneNo, oldpassword, newpassword } = req.body;
+  const { phoneNo, oldpassword, newpassword , whoisUpdate} = req.body;
   try {
     const user = await User.findOne({ phoneNo });
     if (!user) {
@@ -403,6 +403,7 @@ userRouter.put('/api/resetpassword', async (req, res) => {
     // Hash and update the new password
     const newPasswordHash = await bcrypt.hash(newpassword, 10);
     user.password = newPasswordHash;
+    user.whoisUpdate =whoisUpdate
     await user.save();
 
     return res.status(200).json({ msg: "Password reset successful", status: true });
