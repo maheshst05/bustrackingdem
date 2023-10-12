@@ -447,14 +447,16 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
 
       response.message = "Successfully found";
       response.routes = uniqueRoutes;
-    } else if (source.length > 0 && destination.length === 0) {
-      response.message =
-        "Destination does not match with your destination input";
-      response.routes = source;
-    } else if (source.length === 0 && destination.length > 0) {
-      response.message = "Source does not match with your source input";
-      response.routes = destination;
-    } else {
+    } 
+    // else if (source.length > 0 && destination.length === 0) {
+    //   response.message =
+    //     "Destination does not match with your destination input";
+    //   response.routes = source;
+    // } else if (source.length === 0 && destination.length > 0) {
+    //   response.message = "Source does not match with your source input";
+    //   response.routes = destination;
+    // } 
+    else {
       response.message = "No result found";
       response.routes = [];
     }
@@ -469,6 +471,11 @@ AdminRouter.get("/api/search/source/destination/:token?", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
+
+
+
+
+
 
 
 
