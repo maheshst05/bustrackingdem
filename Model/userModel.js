@@ -5,10 +5,10 @@ const userSchema = new mongoose.Schema(
     name: String,
     dob: Date,
     phoneNo: Number,
-    calling : {
-      callingCode :String,
-      countryCode : String
-      },
+    calling: {
+      callingCode: String,
+      countryCode: String,
+    },
     email: String,
     password: String,
     licenceNo: String,
@@ -16,13 +16,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "User",
     },
-    whoisUpdate:{
-      type: "string", 
+    whoisUpdate: {
+      type: "string",
       default: "User",
     },
     privateVehicle: {
       vehicleNo: String,
-      status:{type: String, default:'STOP'},
+      status: { type: String, default: "STOP" },
       vehicletype: String,
       currentLocation: {
         latitude: Number,
@@ -33,18 +33,18 @@ const userSchema = new mongoose.Schema(
     },
     favoriteRoute: {
       RouteId: String,
-        isFavorite: Boolean,
-      },
-      address:{country:{
-        _id:String,
-        countryName: String,
-        countryCode:String,
+      isFavorite: Boolean,
     },
-    _id:String,
-    city: String
-    }
-    
-},
+    address: {
+      country: {
+        _id: String,
+        countryName: String,
+        countryCode: String,
+      },
+      _id: String,
+      city: String,
+    },
+  },
 
   { timestamps: true }
 );
@@ -52,6 +52,3 @@ const userSchema = new mongoose.Schema(
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
-
-
-

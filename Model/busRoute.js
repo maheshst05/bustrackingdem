@@ -6,8 +6,8 @@ const busRouteSchema = new mongoose.Schema({
     _id: String,
     busName: String,
     busNo: String,
-    fuelType:String,
-    fuelCapacity:String
+    fuelType: String,
+    fuelCapacity: String,
   },
   route_details: {
     _id: String,
@@ -38,17 +38,9 @@ const busRouteSchema = new mongoose.Schema({
       {
         latitude: Number,
         longitude: Number,
-        name:String
+        name: String,
       },
     ],
-    address:{country:{
-      _id:String,
-      countryName: String,
-      countryCode:String,
-  },
-  _id:String,
-  city: String
-  }
   },
   driver_details: {
     _id: String,
@@ -58,21 +50,22 @@ const busRouteSchema = new mongoose.Schema({
     phoneNo: Number,
     email: String,
   },
-  
+
   currentRouteLocation: {
     latitude: Number,
     longitude: Number,
     latitudeDelta: Number,
     longitudeDelta: Number,
   },
-  address:{country:{
-    _id:String,
-    countryName: String,
-    countryCode:String,
-},
-_id:String,
-city: String
-},
+  address: {
+    country: {
+      _id: String,
+      countryName: String,
+      countryCode: String,
+    },
+    _id: String,
+    city: String,
+  },
 
   heading: Number,
 });

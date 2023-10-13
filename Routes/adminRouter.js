@@ -8,8 +8,7 @@ const Country = require("../Model/countryModel");
 const City = require("../Model/CityModel");
 const bcrypt = require("bcrypt");
 
-//**Driver**
-
+//Driver///////////////////////////////////////////////////////////////////////////////////////////
 //get driver
 AdminRouter.get("/api/get/drivers/:city?", async (req, res) => {
   try {
@@ -54,10 +53,8 @@ AdminRouter.get("/api/get/drivers/:city?", async (req, res) => {
 AdminRouter.put("/api/update/driver/:id", async (req, res) => {
   const id = req.params.id;
   try {
-   
     if (req.body.password) {
       req.body.password = await bcrypt.hash(req.body.password, 10);
-
     }
     if (!req.body.password) {
       delete req.body.whoisUpdate;
@@ -99,7 +96,7 @@ AdminRouter.delete("/api/delete/driver/:id", async (req, res) => {
   }
 });
 
-//Bus
+//Bus/////////////////////////////////////////////////////////
 // Add a new bus
 AdminRouter.post("/api/add/bus", async (req, res) => {
   try {
@@ -192,7 +189,7 @@ AdminRouter.get("/api/get/buses/:city?", async (req, res) => {
   }
 });
 
-//Route
+//Route//////////////////////////////////////////////////////////////
 //add routes
 AdminRouter.post("/api/add/route", async (req, res) => {
   try {
@@ -219,7 +216,7 @@ AdminRouter.put("/api/update/route/:id", async (req, res) => {
   }
 });
 
-//delete route
+//delete route////////////////////////////////////////////////////////
 AdminRouter.delete("/api/delete/route/:id", async (req, res) => {
   const id = req.params.id;
   try {
@@ -259,13 +256,12 @@ AdminRouter.get("/api/get/routes/:city?", async (req, res) => {
   }
 });
 
-//busRoute
+//busRoute//////////////////////////////////////////////////
 //post busRoutes
 AdminRouter.post("/api/post/busroute", async (req, res) => {
   try {
     const newBusRoute = new BusRoute(req.body);
     await newBusRoute.save();
-
     return res
       .status(200)
       .json({ message: "post successfully", BusRoute: newBusRoute });
@@ -312,38 +308,47 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
   }
 });
 
-
-
 //search destination route by city
-AdminRouter.get('/api/search/destination/:city/:token', async (req, res) => {
-  const city = req.params.city
+AdminRouter.get("/api/search/destination/:city/:token", async (req, res) => {
+  const city = req.params.city;
+  console.log(city);
   try {
     const destinationRoute = req.query.destinationRoute;
 
     if (!destinationRoute) {
-      return res.status(400).json({ success: false, message: 'Source route not provided' });
+      return res
+        .status(400)
+        .json({ success: false, message: "Source route not provided" });
     }
 
-    const destinationQuery = {
-      'route_details.polyline.name': { $regex: destinationRoute, $options: 'i' },
+    const query = {
+      "route_details.polyline.name": {
+        $regex: destinationRoute,
+        $options: "i",
+      },
+      "address._id": city,
     };
-
-    const routes = await BusRoute.find({destinationQuery});
-
+    
+    const routes = await BusRoute.find(query);
+    
     if (routes.length > 0) {
-      const uniquePolylineNames = [...new Set(routes.map((route) => route.route_details.polyline.name))];
+      const uniquePolylineNames = [
+        ...new Set(routes.map((route) => route.route_details.polyline.name)),
+      ];
 
-      const uniqueRoutes = routes.filter((route) => uniquePolylineNames.includes(route.route_details.polyline.name));
+      const uniqueRoutes = routes.filter((route) =>
+        uniquePolylineNames.includes(route.route_details.polyline.name)
+      );
 
       return res.json({
         success: true,
-        message: 'Successfully found',
+        message: "Successfully found",
         routes: uniqueRoutes,
       });
     } else {
       return res.json({
         success: true,
-        message: 'No results found',
+        message: "No results found",
         routes: [],
       });
     }
@@ -351,41 +356,54 @@ AdminRouter.get('/api/search/destination/:city/:token', async (req, res) => {
     console.error(error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: "Internal server error",
       error: error.message,
     });
   }
 });
 
 //search source route
-AdminRouter.get('/api/search/source/:token', async (req, res) => {
+AdminRouter.get("/api/search/source/:city/:token", async (req, res) => {
+  const city = req.params.city;
+  console.log(city)
   try {
     const sourceRoute = req.query.sourceRoute;
 
     if (!sourceRoute) {
-      return res.status(400).json({ success: false, message: 'Source route not provided' });
+      return res
+        .status(400)
+        .json({ success: false, message: "Source route not provided" });
     }
 
-    const sourceQuery = {
-      'route_details.polyline.name': { $regex: sourceRoute, $options: 'i' },
+    const query = {
+      "route_details.polyline.name": {
+        $regex: sourceRoute,
+        $options: "i",
+      },
+      "address._id": city,
     };
+    
+    const routes = await BusRoute.find(query);
 
-    const routes = await BusRoute.find(sourceQuery);
 
     if (routes.length > 0) {
-      const uniquePolylineNames = [...new Set(routes.map((route) => route.route_details.polyline.name))];
+      const uniquePolylineNames = [
+        ...new Set(routes.map((route) => route.route_details.polyline.name)),
+      ];
 
-      const uniqueRoutes = routes.filter((route) => uniquePolylineNames.includes(route.route_details.polyline.name));
+      const uniqueRoutes = routes.filter((route) =>
+        uniquePolylineNames.includes(route.route_details.polyline.name)
+      );
 
       return res.json({
         success: true,
-        message: 'Successfully found',
+        message: "Successfully found",
         routes: uniqueRoutes,
       });
     } else {
       return res.json({
         success: true,
-        message: 'No results found',
+        message: "No results found",
         routes: [],
       });
     }
@@ -393,15 +411,13 @@ AdminRouter.get('/api/search/source/:token', async (req, res) => {
     console.error(error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: "Internal server error",
       error: error.message,
     });
   }
 });
 
-
-
-//manager
+//manager////////////////////////////////////////////////////////////////////////
 //get all and search Manager
 AdminRouter.get("/api/get/manager/:token", async (req, res) => {
   try {
@@ -432,14 +448,13 @@ AdminRouter.put("/api/update/manager/:token/:id", async (req, res) => {
   const id = req.params.id;
   try {
     if (req.body.password) {
-      
       req.body.password = await bcrypt.hash(req.body.password, 10);
     }
 
     if (!req.body.password) {
       delete req.body.whoisUpdate;
     }
-    
+
     const manager = await User.findByIdAndUpdate(
       { _id: id },
       req.body,
@@ -474,7 +489,7 @@ AdminRouter.delete("/api/delete/manager/:token/:id", async (req, res) => {
   }
 });
 
-//user
+//user///////////////////////////////////////////////////////////////////////////////
 //get all users
 AdminRouter.get("/api/get/User/:token", async (req, res) => {
   try {
@@ -574,8 +589,7 @@ AdminRouter.delete("/api/delete/country/:id", async (req, res) => {
   }
 });
 
-//citywith country
-
+//city with country //////////////////////////////////////////////////////////////
 //get city with country
 AdminRouter.get("/api/get/city/:country?", async (req, res) => {
   try {

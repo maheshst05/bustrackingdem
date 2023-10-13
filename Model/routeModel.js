@@ -7,7 +7,7 @@ const routeSchema = new mongoose.Schema({
     longitude: Number,
     latitudeDelta: Number,
     longitudeDelta: Number,
-    name:String,
+    name: String,
   },
   destinationRoute: {
     latitude: Number,
@@ -27,17 +27,18 @@ const routeSchema = new mongoose.Schema({
     {
       latitude: Number,
       longitude: Number,
-      name:String
+      name: String,
     },
   ],
-  address:{country:{
-    _id:String,
-    countryName: String,
-    countryCode:String,
-},
-_id:String,
-city: String
-}
+  address: {
+    country: {
+      _id: String,
+      countryName: String,
+      countryCode: String,
+    },
+    _id: String,
+    city: String,
+  },
 });
 
 const Route = mongoose.model("Route", routeSchema);
