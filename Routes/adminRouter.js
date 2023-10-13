@@ -308,67 +308,12 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
   }
 });
 
-//search destination route by city
-AdminRouter.get("/api/search/destination/:city/:token", async (req, res) => {
+//search source point
+AdminRouter.get("/api/search/source/:city/:token", async (req, res) => {
+  const sourceRoute = req.query.sourceRoute;
   const city = req.params.city;
   console.log(city);
   try {
-    const destinationRoute = req.query.destinationRoute;
-
-    if (!destinationRoute) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Source route not provided" });
-    }
-
-    const query = {
-      "route_details.polyline.name": {
-        $regex: destinationRoute,
-        $options: "i",
-      },
-      "address._id": city,
-    };
-    
-    const routes = await BusRoute.find(query);
-    
-    if (routes.length > 0) {
-      const uniquePolylineNames = [
-        ...new Set(routes.map((route) => route.route_details.polyline.name)),
-      ];
-
-      const uniqueRoutes = routes.filter((route) =>
-        uniquePolylineNames.includes(route.route_details.polyline.name)
-      );
-
-      return res.json({
-        success: true,
-        message: "Successfully found",
-        routes: uniqueRoutes,
-      });
-    } else {
-      return res.json({
-        success: true,
-        message: "No results found",
-        routes: [],
-      });
-    }
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error.message,
-    });
-  }
-});
-
-//search source route
-AdminRouter.get("/api/search/source/:city/:token", async (req, res) => {
-  const city = req.params.city;
-  console.log(city)
-  try {
-    const sourceRoute = req.query.sourceRoute;
-
     if (!sourceRoute) {
       return res
         .status(400)
@@ -376,37 +321,129 @@ AdminRouter.get("/api/search/source/:city/:token", async (req, res) => {
     }
 
     const query = {
-      "route_details.polyline.name": {
-        $regex: sourceRoute,
-        $options: "i",
+      "route_details.polyline": {
+        $elemMatch: {
+          name: { $regex: sourceRoute, $options: "i" },
+        },
       },
       "address._id": city,
     };
-    
-    const routes = await BusRoute.find(query);
 
+    const matchingRoutes = await BusRoute.find(query);
 
-    if (routes.length > 0) {
-      const uniquePolylineNames = [
-        ...new Set(routes.map((route) => route.route_details.polyline.name)),
-      ];
+    if (matchingRoutes.length > 0) {
+      const matchedData = matchingRoutes.map((route) => {
+        const matchingPolylines = route.route_details.polyline.filter(
+          (polyline) => new RegExp(sourceRoute, "i").test(polyline.name)
+        );
 
-      const uniqueRoutes = routes.filter((route) =>
-        uniquePolylineNames.includes(route.route_details.polyline.name)
-      );
+        return matchingPolylines.map((polyline) => ({
+          key: polyline._id,
+          name: polyline.name,
+        }));
+      });
+
+      const matchingData = [].concat(...matchedData);
 
       return res.json({
         success: true,
-        message: "Successfully found",
-        routes: uniqueRoutes,
+        message: `${matchingData.length} matches found`,
+        routes: matchingData,
       });
     } else {
       return res.json({
         success: true,
-        message: "No results found",
+        message: "No matches found",
         routes: [],
       });
     }
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: e.message,
+    });
+  }
+});
+
+//search Destination point
+AdminRouter.get("/api/search/destination/:city/:token", async (req, res) => {
+  const sourceRoute = req.query.destinationRoute;
+  const city = req.params.city;
+  console.log(city);
+  try {
+    if (!sourceRoute) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Source route not provided" });
+    }
+
+    const query = {
+      "route_details.polyline": {
+        $elemMatch: {
+          name: { $regex: sourceRoute, $options: "i" },
+        },
+      },
+      "address._id": city,
+    };
+
+    const matchingRoutes = await BusRoute.find(query);
+
+    if (matchingRoutes.length > 0) {
+      const matchedData = matchingRoutes.map((route) => {
+        const matchingPolylines = route.route_details.polyline.filter(
+          (polyline) => new RegExp(sourceRoute, "i").test(polyline.name)
+        );
+
+        return matchingPolylines.map((polyline) => ({
+          key: polyline._id,
+          name: polyline.name,
+        }));
+      });
+
+      const matchingData = [].concat(...matchedData);
+
+      return res.json({
+        success: true,
+        message: `${matchingData.length} matches found`,
+        routes: matchingData,
+      });
+    } else {
+      return res.json({
+        success: true,
+        message: "No matches found",
+        routes: [],
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: e.message,
+    });
+  }
+});
+
+//search source Route and route route point
+AdminRouter.get("/api/search/:token", async (req, res) => {
+  const { sourceRoute, destinationRoute } = req.query;
+  try {
+    const query = {
+      $and: [
+        {
+          "route_details.polyline._id": sourceRoute,
+        },
+        {
+          "route_details.polyline._id": destinationRoute,
+        },
+      ],
+    };
+
+    const points = await BusRoute.find(query).exec();
+
+    res.send(points);
   } catch (error) {
     console.error(error);
     return res.status(500).json({
@@ -417,7 +454,7 @@ AdminRouter.get("/api/search/source/:city/:token", async (req, res) => {
   }
 });
 
-//manager////////////////////////////////////////////////////////////////////////
+//manager
 //get all and search Manager
 AdminRouter.get("/api/get/manager/:token", async (req, res) => {
   try {
