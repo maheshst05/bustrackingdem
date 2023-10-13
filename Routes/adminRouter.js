@@ -314,8 +314,9 @@ AdminRouter.get("/api/get/busroute", async (req, res) => {
 
 
 
-//search destination route
-AdminRouter.get('/api/search/destination/:token', async (req, res) => {
+//search destination route by city
+AdminRouter.get('/api/search/destination/:city/:token', async (req, res) => {
+  const city = req.params.city
   try {
     const destinationRoute = req.query.destinationRoute;
 
@@ -327,7 +328,7 @@ AdminRouter.get('/api/search/destination/:token', async (req, res) => {
       'route_details.polyline.name': { $regex: destinationRoute, $options: 'i' },
     };
 
-    const routes = await BusRoute.find(destinationQuery);
+    const routes = await BusRoute.find({destinationQuery});
 
     if (routes.length > 0) {
       const uniquePolylineNames = [...new Set(routes.map((route) => route.route_details.polyline.name))];

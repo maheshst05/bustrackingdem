@@ -41,6 +41,14 @@ const busRouteSchema = new mongoose.Schema({
         name:String
       },
     ],
+    address:{country:{
+      _id:String,
+      countryName: String,
+      countryCode:String,
+  },
+  _id:String,
+  city: String
+  }
   },
   driver_details: {
     _id: String,
