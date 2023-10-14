@@ -36,9 +36,12 @@ const routeSchema = new mongoose.Schema({
       countryName: String,
       countryCode: String,
     },
+    
     _id: String,
     city: String,
   },
+  distance:String,
+   time:String 
 });
 
 const Route = mongoose.model("Route", routeSchema);

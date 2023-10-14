@@ -41,6 +41,8 @@ const busRouteSchema = new mongoose.Schema({
         name: String,
       },
     ],
+    distance:String,
+   time:String
   },
   driver_details: {
     _id: String,

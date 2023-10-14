@@ -216,7 +216,7 @@ AdminRouter.put("/api/update/route/:id", async (req, res) => {
   }
 });
 
-//delete route////////////////////////////////////////////////////////
+//delete route...
 AdminRouter.delete("/api/delete/route/:id", async (req, res) => {
   const id = req.params.id;
   try {
@@ -297,7 +297,7 @@ AdminRouter.delete("/api/delete/busroute/:id", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
-
+//get bus with route
 AdminRouter.get("/api/get/busroute", async (req, res) => {
   try {
     const BusRoutes = await BusRoute.find();
