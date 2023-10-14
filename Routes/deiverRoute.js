@@ -101,6 +101,8 @@ driverRouter.get(
           route: bus.route_details.route,
           stops: bus.route_details.stops,
           polyline: bus.route_details.polyline,
+          distance: bus.route.distance,
+          time: bus.route.time
       },
         driver_details: {
           name: bus.driver_details.name,
