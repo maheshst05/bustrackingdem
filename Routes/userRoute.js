@@ -218,6 +218,7 @@ userRouter.get("/api/get-bus/:token?", async (req, res) => {
       "route_details.polyline": 1,
       "route_details.city":1,
       "route_details.distance":1,
+      "route_details.time":1,
       "address":1,
       time: 1,
       status: 1,
