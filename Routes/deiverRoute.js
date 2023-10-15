@@ -77,9 +77,10 @@ driverRouter.put(
 //get bus that driver assigned
 driverRouter.get(
   "/api/get/assigned/bus/:token",
-  authentication,
+   authentication,
   async (req, res) => {
-    const id = req.id;
+     const id = req.id;
+  //  const id ="6526c266fa76b066ec88c6f7"
     try {
       const buses = await BusRoute.find({ "driver_details._id": id });
 
@@ -101,8 +102,8 @@ driverRouter.get(
           route: bus.route_details.route,
           stops: bus.route_details.stops,
           polyline: bus.route_details.polyline,
-          distance: bus.route.distance,
-          time: bus.route.time
+          distance: bus.route_details.distance,
+          time: bus.route_details.time
       },
         driver_details: {
           name: bus.driver_details.name,
