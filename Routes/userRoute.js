@@ -390,7 +390,7 @@ userRouter.get("/api/route/:token?", authentication, async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
-
+//reset password
 userRouter.put('/api/resetpassword', async (req, res) => {
   const { phoneNo, oldpassword, newpassword , whoisUpdate} = req.body;
   try {
@@ -422,7 +422,39 @@ userRouter.put('/api/resetpassword', async (req, res) => {
   }
 });
 
+//check numbser
+userRouter.get('/api/number/:phoneNo', async (req, res) => {
+  const phoneNo = req.params.phoneNo;
 
+  try {
+    const user = await User.findOne({ phoneNo: phoneNo });
+
+    if (user) {
+      res.status(200).json({ message: "Number is present", user: user });
+    } else {
+      res.status(404).json({ message: "Number is not present" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+//forgate password
+userRouter.put('/api/forgot/password/:id', async (req, res) => {
+  const newPassword = req.body.password; 
+
+  try {
+    if (!newPassword) {
+      return res.status(400).json({ message: "New password is required" });
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10); 
+
+    await User.findByIdAndUpdate({ _id: req.params.id }, { password: hashedPassword });
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 module.exports = userRouter;
-//asdkjasLJKDKJashdjk

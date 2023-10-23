@@ -8,6 +8,7 @@ const driverRouter = require("./Routes/deiverRoute");
 const userRouter = require('./Routes/userRoute');
 const AdminRouter = require("./Routes/adminRouter");
 const PrivateRouter = require("./Routes/PrivateRoute");
+// const Otprouter  = require("./Routes/Otp")
 app.use(express.json());
 app.use(cors());
 
@@ -15,13 +16,14 @@ app.use(cors());
 require("dotenv").config();
 
 // Middleware for user authentication using JWT
-const authentication = require("./Middleware/authentication");
+//const authentication = require("./Middleware/authentication");
 
 app.use("/driver", driverRouter);
 app.use("/user", userRouter);
 app.use("/live", liveRouter);
 app.use("/",AdminRouter)
 app.use("/",PrivateRouter)
+// app.use("/",Otprouter)
 
 // Start the server
 app.listen(process.env.PORT, async () => {
