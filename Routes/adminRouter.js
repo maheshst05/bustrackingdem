@@ -279,7 +279,7 @@ AdminRouter.put("/api/update/busroute/:id", async (req, res) => {
       { _id: id },
       req.body
     );
-    return res.status(200).json({ message: "Route Updated successfully" });
+    return res.status(200).json({ message: "Route Updated successfully",BusRoute:updatedBusRoute });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
