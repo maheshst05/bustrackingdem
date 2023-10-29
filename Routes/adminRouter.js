@@ -697,4 +697,17 @@ AdminRouter.delete("/api/delete/city/:id", async (req, res) => {
   }
 });
 
+
+AdminRouter.put("/api/update/bus/status/:id/:token", async (req, res) => {
+  try {
+    const updatedBusRoute = await BusRoute.findByIdAndUpdate(req.params.id, req.body);
+
+    return res.status(200).json({ msg: "Bus status updated successfully", BusRoute: updatedBusRoute });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+});
+
+
 module.exports = AdminRouter;
