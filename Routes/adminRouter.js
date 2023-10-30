@@ -8,7 +8,7 @@ const Country = require("../Model/countryModel");
 const City = require("../Model/CityModel");
 const bcrypt = require("bcrypt");
 
-//Driver///////////////////////////////////////////////////////////////////////////////////////////
+//Driver
 //get driver
 AdminRouter.get("/api/get/drivers/:city?", async (req, res) => {
   try {
@@ -708,6 +708,28 @@ AdminRouter.put("/api/update/bus/status/:id/:token", async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 });
+
+//get live buses
+AdminRouter.get("/api/get/live/:id", async (req, res) => {
+  try {
+    const routeId = req.params.id;
+    const busRoute = await BusRoute.find(
+      { 'route_details._id': routeId, 'status': 'START' },
+      'bus_details currentRouteLocation'
+    );
+
+    if (busRoute.length === 0) {
+      return res.status(400).json({ msg: "No bus in START status found for this route" });
+    }
+
+    return res.status(200).json(busRoute);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+});
+
+
 
 
 module.exports = AdminRouter;
