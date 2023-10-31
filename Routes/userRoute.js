@@ -361,6 +361,7 @@ userRouter.get("/api/route/:token?", authentication, async (req, res) => {
       "bus_details.busName": 1,
       "bus_details.busNo": 1,
       "driver_details.name": 1,
+      "route_details._id":1,
       "route_details.routeNo": 1,
       "route_details.route": 1,
       "route_details.sourceRoute": 1,
